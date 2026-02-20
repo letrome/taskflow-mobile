@@ -50,3 +50,5 @@ pnpm-debug.log*
 # builds
 build-*.apk
 build-*.aab
+
+nativewind-env.d.ts

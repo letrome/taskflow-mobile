@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #faf4df;
+    --foreground: #394e38;
+
+    --primary: #cb6542;
+    --primary-foreground: #faf4df;
+
+    --card: #fdf9e8;
+    --card-foreground: #394e38;
+
+    --border: #cb6542;
+  }
+
+  .dark {
+    --background: #394e38;
+    --foreground: #faf4df;
+
+    --primary: #cb6542;
+    --primary-foreground: #faf4df;
+
+    --card: #2b3b2a;
+    --card-foreground: #faf4df;
+
+    --border: #cb6542;
+  }
+}

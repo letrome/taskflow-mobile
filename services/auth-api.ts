@@ -1,7 +1,7 @@
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const authApi = {
-  login: async (data: any) => {
+  login: async (data: Record<string, unknown>) => {
     const response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -11,7 +11,7 @@ export const authApi = {
     return { ok: response.ok, status: response.status, data: result };
   },
 
-  register: async (data: any) => {
+  register: async (data: Record<string, unknown>) => {
     const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

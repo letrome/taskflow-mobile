@@ -1,28 +1,19 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import {
-  Button,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { authApi } from "../services/auth-api";
 import { saveToken } from "../services/auth-storage";
 
 export default function LoginScreen() {
-  // Gestion des champs du formulaire
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  // State to handle error display
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
-    setError(null); // Reset error before attempt
+    setError(null);
 
     try {
       const { ok, status, data } = await authApi.login(formData);
@@ -42,71 +33,55 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        onChangeText={(val) => setFormData({ ...formData, email: val })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={(val) => setFormData({ ...formData, password: val })}
-        style={styles.input}
-      />
+    <View className="flex-1 justify-center p-5 bg-background">
+      <View className="bg-card p-6 rounded-3xl shadow-sm border border-border">
+        <Text className="text-3xl font-bold text-foreground mb-6 text-center">
+          Welcome Back
+        </Text>
+        <TextInput
+          placeholder="Email"
+          placeholderTextColor="#888"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          onChangeText={(val) => setFormData({ ...formData, email: val })}
+          className="border border-border rounded-xl mb-4 p-4 text-foreground bg-background text-base"
+        />
+        <TextInput
+          placeholder="Password"
+          placeholderTextColor="#888"
+          secureTextEntry
+          onChangeText={(val) => setFormData({ ...formData, password: val })}
+          className="border border-border rounded-xl mb-6 p-4 text-foreground bg-background text-base"
+        />
 
-      {error && (
-        <View style={{ marginBottom: 10 }}>
-          <Text style={styles.errorText}>{error}</Text>
-          <Text style={{ fontSize: 10, color: "gray", textAlign: "center" }}>
-            API: {process.env.EXPO_PUBLIC_API_URL}
+        {error && (
+          <View className="mb-4">
+            <Text className="text-red-500 text-center mb-2">{error}</Text>
+            <Text className="text-[10px] text-gray-500 text-center">
+              API: {process.env.EXPO_PUBLIC_API_URL}
+            </Text>
+          </View>
+        )}
+
+        <Pressable
+          onPress={handleLogin}
+          className="bg-primary p-4 rounded-2xl items-center shadow-sm"
+        >
+          <Text className="text-primary-foreground font-bold text-lg">
+            Login
           </Text>
-        </View>
-      )}
+        </Pressable>
 
-      <Button title="Login" onPress={handleLogin} />
-
-      <View style={{ marginTop: 20, gap: 10 }}>
-        <Button
-          title="Test Google (Public)"
-          color="gray"
-          onPress={async () => {
-            try {
-              const res = await fetch("https://www.google.com");
-              alert(`Google Status: ${res.status}`);
-            } catch (e: any) {
-              alert(`Google Failed: ${e.message}`);
-            }
-          }}
-        />
-        <Button
-          title="Test health (API)"
-          color="gray"
-          onPress={async () => {
-            try {
-              const url = `${process.env.EXPO_PUBLIC_API_URL}/health`;
-              const res = await fetch(url);
-              alert(`Health Status: ${res.status}`);
-            } catch (e: any) {
-              alert(
-                `Health Failed: ${e.message} \nURL: ${process.env.EXPO_PUBLIC_API_URL}`,
-              );
-            }
-          }}
-        />
+        <Pressable
+          onPress={() => router.replace("/register")}
+          className="items-center mt-6 p-2"
+        >
+          <Text className="text-foreground text-base">
+            Don't have an account?{" "}
+            <Text className="text-primary font-bold">Register</Text>
+          </Text>
+        </Pressable>
       </View>
-
-      <Pressable onPress={() => router.replace("/register")}>
-        <Text>Don't have an account? Register</Text>
-      </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  input: { borderBottomWidth: 1, marginBottom: 15, padding: 8 },
-  errorText: { color: "red", marginBottom: 10, textAlign: "center" },
-});

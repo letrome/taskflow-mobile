@@ -1,24 +1,11 @@
-import { StyleSheet } from "react-native";
-import { Text, View } from "./Themed";
+import { Text, View } from "react-native";
 
 export default function Header({ value }: { value: string }) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{value}</Text>
+    <View className="flex-1 flex-col items-center justify-center bg-transparent">
+      <Text className="text-xl font-bold capitalize text-foreground">
+        {value}
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textTransform: "capitalize",
-  },
-});

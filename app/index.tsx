@@ -24,8 +24,8 @@ export default function Index() {
 
   if (!isChecked) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+      <View className="flex-1 justify-center items-center bg-background">
+        <ActivityIndicator size="large" color="#CB6542" />
       </View>
     );
   }
