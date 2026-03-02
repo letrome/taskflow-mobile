@@ -28,7 +28,7 @@ export default function RegisterScreen() {
         setError(data.message || "An error occurred during registration.");
       }
     } catch (err) {
-      console.log(err);
+      console.error("Registration error:", err);
       setError("Unable to connect to the server.");
     }
   };

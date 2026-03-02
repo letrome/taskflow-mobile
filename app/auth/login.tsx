@@ -27,7 +27,7 @@ export default function LoginScreen() {
         setError(data.message || "An error occurred during login.");
       }
     } catch (err) {
-      console.log(err);
+      console.error("Login error:", err);
       setError(err instanceof Error ? err.message : JSON.stringify(err));
     }
   };
