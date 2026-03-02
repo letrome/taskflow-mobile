@@ -10,15 +10,16 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useColorScheme } from "@/components/useColorScheme";
+
 import "../global.css";
 
-export {
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  initialRouteName: "login",
+  initialRouteName: "auth/login",
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -50,13 +51,22 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="register" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="auth/register"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </ThemeProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -6,7 +6,7 @@ export default function TabThreeScreen() {
   const logout = async () => {
     try {
       await deleteToken();
-      router.replace("/login");
+      router.replace("/auth/login");
     } catch (error) {
       console.error("Logout failed", error);
     }
@@ -14,9 +14,7 @@ export default function TabThreeScreen() {
 
   return (
     <View className="flex-1 items-center justify-center p-5 bg-background">
-      <Text className="text-2xl font-bold text-foreground mb-6">
-        Parameters
-      </Text>
+      <Text className="text-2xl font-bold text-foreground mb-6">Settings</Text>
       <View className="bg-card w-full p-6 rounded-2xl shadow-sm border border-border items-center">
         <Pressable
           className="bg-red-500 dark:bg-red-600 p-4 rounded-xl items-center w-full"

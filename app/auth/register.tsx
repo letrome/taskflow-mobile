@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
-import { authApi } from "../services/auth-api";
+import { authApi } from "../../services/auth-api";
 
 export default function RegisterScreen() {
   const [formData, setFormData] = useState({
@@ -41,7 +41,7 @@ export default function RegisterScreen() {
             Account created successfully!
           </Text>
           <Pressable
-            onPress={() => router.replace("/login")}
+            onPress={() => router.replace("/auth/login")}
             className="bg-primary p-4 rounded-2xl items-center shadow-sm w-full"
           >
             <Text className="text-primary-foreground font-bold text-lg">
@@ -101,7 +101,7 @@ export default function RegisterScreen() {
         </Pressable>
 
         <Pressable
-          onPress={() => router.replace("/login")}
+          onPress={() => router.replace("/auth/login")}
           className="items-center mt-6 p-2"
         >
           <Text className="text-foreground text-base">

@@ -52,3 +52,5 @@ build-*.apk
 build-*.aab
 
 nativewind-env.d.ts
+
+bruno

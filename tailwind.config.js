@@ -1,6 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./constants/**/*.{js,jsx,ts,tsx}",
+    "./*.{js,jsx,ts,tsx}",
+  ],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
@@ -14,6 +19,10 @@ module.exports = {
         card: {
           DEFAULT: "var(--card)",
           foreground: "var(--card-foreground)",
+        },
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
         },
         border: "var(--border)",
       },

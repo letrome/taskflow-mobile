@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
-import { authApi } from "../services/auth-api";
-import { saveToken } from "../services/auth-storage";
+import { authApi } from "../../services/auth-api";
+import { saveToken } from "../../services/auth-storage";
 
 export default function LoginScreen() {
   const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ export default function LoginScreen() {
 
       if (ok && data.token) {
         await saveToken(data.token);
-        router.replace("/(tabs)");
+        router.replace("/(tabs)/projects");
       } else if (status === 401) {
         setError("Invalid credentials.");
       } else {
@@ -73,7 +73,7 @@ export default function LoginScreen() {
         </Pressable>
 
         <Pressable
-          onPress={() => router.replace("/register")}
+          onPress={() => router.replace("/auth/register")}
           className="items-center mt-6 p-2"
         >
           <Text className="text-foreground text-base">

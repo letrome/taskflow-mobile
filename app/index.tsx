@@ -25,14 +25,14 @@ export default function Index() {
   if (!isChecked) {
     return (
       <View className="flex-1 justify-center items-center bg-background">
-        <ActivityIndicator size="large" color="#CB6542" />
+        <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );
   }
 
   if (isSignedIn) {
-    return <Redirect href="/(tabs)" />;
+    return <Redirect href="/(tabs)/projects" />;
   }
 
-  return <Redirect href="/login" />;
+  return <Redirect href="/auth/login" />;
 }

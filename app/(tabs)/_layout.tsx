@@ -1,23 +1,16 @@
+import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
-import type React from "react";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
-
-const TabIcon = ({ color }: { color: string }) => (
-  <TabBarIcon name="code" color={color} />
+const TabProject = ({ color }: { color: string }) => (
+  <AntDesign name="project" size={24} color={color} />
 );
 
-const ParametersIcon = ({ color }: { color: string }) => (
-  <TabBarIcon name="gear" color={color} />
+const SettingsIcon = ({ color }: { color: string }) => (
+  <FontAwesome name="gear" size={24} color={color} />
 );
 
 export default function TabLayout() {
@@ -27,28 +20,21 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: useClientOnlyValue(false, false),
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="projects"
         options={{
-          title: "Tab One",
-          tabBarIcon: TabIcon,
+          title: "Projects",
+          tabBarIcon: TabProject,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="settings"
         options={{
-          title: "Tab Two",
-          tabBarIcon: TabIcon,
-        }}
-      />
-      <Tabs.Screen
-        name="parameters"
-        options={{
-          title: "Parameters",
-          tabBarIcon: ParametersIcon,
+          title: "Settings",
+          tabBarIcon: SettingsIcon,
         }}
       />
     </Tabs>

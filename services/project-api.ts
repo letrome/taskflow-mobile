@@ -1,0 +1,89 @@
+import { getToken } from "./auth-storage";
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+export const projectApi = {
+  getProjects: async () => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  createProject: async (data: {
+    title: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    status: string;
+    members: string[];
+  }) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  getProject: async (id: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  updateProject: async (
+    id: string,
+    data: Partial<{
+      title: string;
+      description: string;
+      start_date: string;
+      end_date: string;
+      status: string;
+      members: string[];
+    }>,
+  ) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  getTasks: async (id: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects/${id}/tasks`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+};
