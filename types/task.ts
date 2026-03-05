@@ -1,5 +1,17 @@
-type State = "OPEN" | "IN_PROGRESS" | "CLOSED";
-type Priority = "LOW" | "MEDIUM" | "HIGH";
+export const TASK_STATE_OPTIONS = [
+  { value: "OPEN", label: "Open" },
+  { value: "IN_PROGRESS", label: "In Progress" },
+  { value: "CLOSED", label: "Closed" },
+] as const;
+
+export const TASK_PRIORITY_OPTIONS = [
+  { value: "LOW", label: "Low" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "HIGH", label: "High" },
+] as const;
+
+export type State = (typeof TASK_STATE_OPTIONS)[number]["value"];
+export type Priority = (typeof TASK_PRIORITY_OPTIONS)[number]["value"];
 
 export type Task = {
   id: string;

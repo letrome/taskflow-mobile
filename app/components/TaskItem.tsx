@@ -1,9 +1,9 @@
 import { Text, View } from "react-native";
 import type { Task } from "@/types/task";
 
-type TaskItemProps = {
+type TaskItemProps = Readonly<{
   item: Task;
-};
+}>;
 
 export default function TaskItem({ item }: TaskItemProps) {
   let statusColor = "bg-green-200";

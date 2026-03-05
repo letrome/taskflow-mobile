@@ -74,9 +74,51 @@ export const projectApi = {
     return { ok: response.ok, status: response.status, data: result };
   },
 
+  createProjectTask: async (
+    projectId: string,
+    data: {
+      title: string;
+      description: string;
+      due_date: string;
+      priority: string;
+      state: string;
+      assignee: string | null;
+      tags: string[];
+    },
+  ) => {
+    const token = await getToken();
+
+    const { assignee, ...restData } = data;
+    const payload = assignee === null ? restData : { ...restData, assignee };
+
+    const response = await fetch(`${API_URL}/projects/${projectId}/tasks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
   getTasks: async (id: string) => {
     const token = await getToken();
     const response = await fetch(`${API_URL}/projects/${id}/tasks`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  getProjectTags: async (id: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects/${id}/tags`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -1,8 +1,8 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router } from "expo-router";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
+import { useProjects } from "@/hooks/useProjects";
+import CreateElement from "../../components/CreateElement";
 import ProjectCard from "../../components/ProjectCard";
-import { useProjects } from "../../hooks/useProjects";
 
 export default function TabOneScreen() {
   const { projects } = useProjects();
@@ -30,12 +30,7 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.id}
       />
 
-      <Pressable
-        onPress={createProject}
-        className="absolute bottom-6 right-6 w-16 h-16 bg-primary rounded-full items-center justify-center shadow-lg"
-      >
-        <FontAwesome name="plus" size={24} color="white" />
-      </Pressable>
+      <CreateElement onPress={createProject} />
     </View>
   );
 }

@@ -1,13 +1,14 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  BottomSheetBackdrop,
-  type BottomSheetBackdropProps,
-  BottomSheetModal,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useCallback, useRef } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import type { Project } from "@/types/project";
+import SelectionSheet from "./SelectionSheet";
+
+const STATUS_OPTIONS = [
+  { value: "ACTIVE", label: "Active" },
+  { value: "ARCHIVED", label: "Archived" },
+];
 
 type ProjectHeaderProps = Readonly<{
   project: Project;
@@ -27,23 +28,11 @@ export default function ProjectHeader({
   }, []);
 
   const handleStatusChange = useCallback(
-    (status: Project["status"]) => {
-      setProject({ ...project, status });
-      updateProject({ status });
-      bottomSheetModalRef.current?.dismiss();
+    (status: string) => {
+      setProject({ ...project, status: status as Project["status"] });
+      updateProject({ status: status as Project["status"] });
     },
     [project, setProject, updateProject],
-  );
-
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    ),
-    [],
   );
 
   const isActive = project.status.toLowerCase() === "active";
@@ -82,39 +71,14 @@ export default function ProjectHeader({
         </TouchableOpacity>
       )}
 
-      <BottomSheetModal
+      <SelectionSheet
         ref={bottomSheetModalRef}
+        title="Change Status"
+        options={STATUS_OPTIONS}
+        selectedValue={project.status}
+        onSelect={handleStatusChange}
         snapPoints={["25%"]}
-        backdropComponent={renderBackdrop}
-      >
-        <BottomSheetView className="flex-1 p-6 items-center">
-          <Text className="text-xl font-bold mb-6 text-foreground">
-            Change Status
-          </Text>
-          <View className="flex-row gap-4 w-full justify-center">
-            <TouchableOpacity
-              onPress={() => handleStatusChange("ACTIVE")}
-              className={`px-6 py-3 rounded-full flex-1 items-center ${project.status === "ACTIVE" ? "bg-primary" : "bg-primary/10"}`}
-            >
-              <Text
-                className={`font-bold text-lg ${project.status === "ACTIVE" ? "text-primary-foreground" : "text-primary"}`}
-              >
-                Active
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleStatusChange("ARCHIVED")}
-              className={`px-6 py-3 rounded-full flex-1 items-center ${project.status === "ARCHIVED" ? "bg-primary" : "bg-primary/10"}`}
-            >
-              <Text
-                className={`font-bold text-lg ${project.status === "ARCHIVED" ? "text-primary-foreground" : "text-primary"}`}
-              >
-                Archived
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </BottomSheetView>
-      </BottomSheetModal>
+      />
     </View>
   );
 }

@@ -13,7 +13,7 @@ export function useCreateProject() {
   const handleSubmit = async () => {
     try {
       if (!title || !description || !startDate || !endDate) {
-        setError("Veuillez remplir les champs obligatoires");
+        setError("Please fill in all required fields");
         return;
       }
 
@@ -32,15 +32,13 @@ export function useCreateProject() {
       const response = await projectApi.createProject(payload);
 
       if (!response.ok) {
-        throw new Error(response.data?.message || "Erreur lors de la création");
+        throw new Error(response.data?.message || "Error creating project");
       }
 
       router.back();
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Une erreur inattendue s'est produite",
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
     } finally {
       setIsSubmitting(false);
