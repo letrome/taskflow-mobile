@@ -30,9 +30,18 @@ const fetchTasks = async (id: string) => {
   return null;
 };
 
+const fetchTags = async (id: string) => {
+  const response = await projectApi.getProjectTags(id);
+  if (response.ok) {
+    return response.data;
+  }
+  return [];
+};
+
 export function useProjectDetails(id: string) {
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[] | null>(null);
+  const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -44,10 +53,15 @@ export function useProjectDetails(id: string) {
         const data = await fetchTasks(id);
         if (data) setTasks(data);
       };
+      const loadTags = async () => {
+        const data = await fetchTags(id);
+        if (data) setTags(data);
+      };
 
       if (id) {
         loadProject();
         loadTasks();
+        loadTags();
       }
     }, [id]),
   );
@@ -73,10 +87,35 @@ export function useProjectDetails(id: string) {
     }
   };
 
+  const addTag = async (name: string) => {
+    const response = await projectApi.addProjectTag(id, name);
+    if (response.ok && response.data) {
+      setTags((prev) => [...prev, response.data]);
+    } else {
+      console.error("Failed to add tag", response);
+    }
+  };
+
+  const deleteTag = async (tagId: string) => {
+    // Optimistic update
+    const previousTags = [...tags];
+    setTags((prev) => prev.filter((t) => t.id !== tagId));
+
+    const response = await projectApi.deleteTag(tagId);
+    if (!response.ok) {
+      // Revert on failure
+      console.error("Failed to delete tag", response);
+      setTags(previousTags);
+    }
+  };
+
   return {
     project,
     setProject,
     tasks,
+    tags,
     updateProject,
+    addTag,
+    deleteTag,
   };
 }

@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import CreateElement from "@/app/components/CreateElement";
+import TagsList from "@/app/components/TagsList";
 import TaskList from "@/app/components/TaskList";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
 import ProjectDetailsCard from "../../components/ProjectDetailsCard";
@@ -8,7 +9,8 @@ import ProjectHeader from "../../components/ProjectHeader";
 
 export default function ProjectDetailsScreen() {
   const { id }: { id: string } = useLocalSearchParams();
-  const { project, tasks, setProject, updateProject } = useProjectDetails(id);
+  const { project, tasks, tags, setProject, updateProject, addTag, deleteTag } =
+    useProjectDetails(id);
 
   // Loading state
   if (!project) {
@@ -37,6 +39,13 @@ export default function ProjectDetailsScreen() {
         project={project}
         setProject={setProject}
         updateProject={updateProject}
+      />
+
+      <TagsList
+        tags={tags}
+        editable
+        onAddTag={addTag}
+        onDeleteTag={deleteTag}
       />
 
       {/* Task list */}

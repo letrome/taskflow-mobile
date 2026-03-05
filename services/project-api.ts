@@ -128,4 +128,37 @@ export const projectApi = {
     const result = await response.json();
     return { ok: response.ok, status: response.status, data: result };
   },
+
+  addProjectTag: async (projectId: string, name: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects/${projectId}/tags`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name }),
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  deleteTag: async (tagId: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/tags/${tagId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // For DELETE, there might not be a JSON response body
+    let result = null;
+    try {
+      result = await response.json();
+    } catch (e) {
+      // Ignore
+    }
+    return { ok: response.ok, status: response.status, data: result };
+  },
 };

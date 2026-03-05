@@ -8,4 +8,5 @@ export type Project = {
   start_date?: string | null;
   end_date?: string | null;
   members?: unknown[];
+  tags?: string[];
 };
