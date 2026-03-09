@@ -14,6 +14,8 @@ import TaskDetailsCard from "@/app/components/TaskDetailsCard";
 import TaskHeader from "@/app/components/TaskHeader";
 import { useTaskDetails } from "@/hooks/useTaskDetails";
 import { projectApi } from "@/services/project-api";
+import { userApi } from "@/services/user-api";
+import type { User } from "@/types/user";
 
 export default function TaskDetailsScreen() {
   const { id }: { id: string } = useLocalSearchParams();
@@ -21,25 +23,31 @@ export default function TaskDetailsScreen() {
     task,
     setTask,
     tags,
+    assigneeUser,
     updateTask,
     deleteCurrentTask,
     addTag,
     removeTag,
   } = useTaskDetails(id);
 
+  const [projectMembers, setProjectMembers] = useState<User[]>([]);
+
   const [projectTagOptions, setProjectTagOptions] = useState<
     { value: string; label: string }[]
   >([]);
 
   useEffect(() => {
-    const fetchProjectTags = async () => {
+    const fetchProjectData = async () => {
       if (!task?.project) return;
       try {
-        const response = await projectApi.getProjectTags(task.project);
-        if (response.ok && response.data) {
-          const fetchedTags = response.data;
+        const [tagsRes, projectRes] = await Promise.all([
+          projectApi.getProjectTags(task.project),
+          projectApi.getProject(task.project),
+        ]);
+
+        if (tagsRes.ok && tagsRes.data) {
           setProjectTagOptions(
-            fetchedTags.map((t: { id?: string; name?: string } | string) => {
+            tagsRes.data.map((t: { id?: string; name?: string } | string) => {
               if (typeof t === "string") return { value: t, label: t };
               return {
                 value: t.id || t.name || "",
@@ -48,11 +56,27 @@ export default function TaskDetailsScreen() {
             }),
           );
         }
+
+        if (projectRes.ok && projectRes.data) {
+          const memberIds = projectRes.data.members || [];
+          if (memberIds.length > 0) {
+            const userPromises = memberIds.map((memberId: string) =>
+              userApi.getUser(memberId),
+            );
+            const userResponses = await Promise.all(userPromises);
+            const fullMembers = userResponses
+              .filter((res) => res.ok && res.data)
+              .map((res) => (res.data.user || res.data) as User);
+            setProjectMembers(fullMembers);
+          } else {
+            setProjectMembers([]);
+          }
+        }
       } catch (err) {
-        console.error("Failed to fetch project tags", err);
+        console.error("Failed to fetch project data", err);
       }
     };
-    fetchProjectTags();
+    fetchProjectData();
   }, [task?.project]);
 
   const handleDeleteTask = () => {
@@ -115,6 +139,8 @@ export default function TaskDetailsScreen() {
           task={task}
           setTask={setTask}
           updateTask={updateTask}
+          assignee={assigneeUser}
+          projectMembers={projectMembers}
         />
 
         <TagsList

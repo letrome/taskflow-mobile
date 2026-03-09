@@ -4,7 +4,9 @@ import { useCallback, useState } from "react";
 import { deleteToken } from "@/services/auth-storage";
 import { projectApi } from "@/services/project-api";
 import { taskApi } from "@/services/task-api";
+import { userApi } from "@/services/user-api";
 import type { Task } from "@/types/task";
+import type { User } from "@/types/user";
 
 const fetchTask = async (id: string) => {
   const response = await taskApi.fetchTask(id);
@@ -29,6 +31,7 @@ const fetchProjectTags = async (projectId: string) => {
 export function useTaskDetails(id: string) {
   const [task, setTask] = useState<Task | null>(null);
   const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
+  const [assigneeUser, setAssigneeUser] = useState<User | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -37,11 +40,22 @@ export function useTaskDetails(id: string) {
         if (data) {
           setTask(data);
 
+          if (data.assignee) {
+            const userRes = await userApi.getUser(data.assignee);
+            if (userRes.ok) {
+              setAssigneeUser(userRes.data.user || userRes.data);
+            }
+          } else {
+            setAssigneeUser(null);
+          }
+
           if (data.project && data.tags && data.tags.length > 0) {
             const projectTags = await fetchProjectTags(data.project);
 
             const taskTagsDetails = data.tags.map((tagId: string) => {
-              const found = projectTags.find((pt: any) => pt.id === tagId);
+              const found = projectTags.find(
+                (pt: { id: string; name: string }) => pt.id === tagId,
+              );
               return found
                 ? { id: tagId, name: found.name }
                 : { id: tagId, name: tagId };
@@ -70,10 +84,18 @@ export function useTaskDetails(id: string) {
       state: updatedTask.state,
       priority: updatedTask.priority,
       due_date: updatedTask.due_date,
+      assignee: updatedTask.assignee,
     });
 
     if (response.ok) {
-      setTask(response.data);
+      const newData = response.data;
+      setTask(newData);
+      if (newData.assignee && newData.assignee !== assigneeUser?.id) {
+        const userRes = await userApi.getUser(newData.assignee);
+        if (userRes.ok) setAssigneeUser(userRes.data.user || userRes.data);
+      } else if (!newData.assignee) {
+        setAssigneeUser(null);
+      }
     }
     if (response.status === 401) {
       await deleteToken();
@@ -115,6 +137,7 @@ export function useTaskDetails(id: string) {
     task,
     setTask,
     tags,
+    assigneeUser,
     updateTask,
     deleteCurrentTask,
     addTag,

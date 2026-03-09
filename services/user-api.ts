@@ -16,18 +16,19 @@ export const userApi = {
     return { ok: response.ok, status: response.status, data: result };
   },
 
-  searchUsers: async (query: string) => {
+  searchUsers: async (query: string, projectId?: string) => {
     const token = await getToken();
-    const response = await fetch(
-      `${API_URL}/users/search?query=${encodeURIComponent(query)}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+    let url = `${API_URL}/users/search?query=${encodeURIComponent(query)}`;
+    if (projectId) {
+      url += `&projectId=${projectId}`;
+    }
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
     const result = await response.json();
     return { ok: response.ok, status: response.status, data: result };
   },

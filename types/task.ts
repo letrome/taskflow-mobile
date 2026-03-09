@@ -21,6 +21,6 @@ export type Task = {
   priority: Priority;
   state: State;
   project: string;
-  assignee?: string;
+  assignee?: string | null;
   tags: string[];
 };

@@ -5,10 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import CreateElementButton from "@/app/components/CreateElementButton";
 import { useCreateTask } from "@/hooks/useCreateTask";
+import { userApi } from "@/services/user-api";
+import type { User } from "@/types/user";
 import { projectApi } from "../../../services/project-api";
 import { TASK_PRIORITY_OPTIONS, TASK_STATE_OPTIONS } from "../../../types/task";
 import DatePickerField from "../../components/DatePickerField";
 import MultipleSelectionSheet from "../../components/MultipleSelectionSheet";
+import SearchableSelectionSheet from "../../components/SearchableSelectionSheet";
 import SelectionSheet from "../../components/SelectionSheet";
 
 export default function CreateTaskScreen() {
@@ -38,16 +41,20 @@ export default function CreateTaskScreen() {
     { value: string; label: string }[]
   >([]);
   const [isLoadingTags, setIsLoadingTags] = useState(false);
+  const [projectMembers, setProjectMembers] = useState<User[]>([]);
 
   useEffect(() => {
-    const fetchTags = async () => {
+    const fetchProjectData = async () => {
       setIsLoadingTags(true);
       try {
-        const response = await projectApi.getProjectTags(projectId);
-        if (response.ok && response.data) {
-          const tags = response.data;
+        const [tagsRes, projectRes] = await Promise.all([
+          projectApi.getProjectTags(projectId),
+          projectApi.getProject(projectId),
+        ]);
+
+        if (tagsRes.ok && tagsRes.data) {
           setTagOptions(
-            tags.map((tag: { id?: string; name?: string } | string) => {
+            tagsRes.data.map((tag: { id?: string; name?: string } | string) => {
               if (typeof tag === "string") {
                 return { value: tag, label: tag };
               }
@@ -58,20 +65,37 @@ export default function CreateTaskScreen() {
             }),
           );
         }
+
+        if (projectRes.ok && projectRes.data) {
+          const memberIds = projectRes.data.members || [];
+          if (memberIds.length > 0) {
+            const userPromises = memberIds.map((id: string) =>
+              userApi.getUser(id),
+            );
+            const userResponses = await Promise.all(userPromises);
+            const fullMembers = userResponses
+              .filter((res) => res.ok && res.data)
+              .map((res) => (res.data.user || res.data) as User);
+            setProjectMembers(fullMembers);
+          } else {
+            setProjectMembers([]);
+          }
+        }
       } catch (err) {
-        console.error("Failed to fetch tags", err);
+        console.error("Failed to fetch project data", err);
       } finally {
         setIsLoadingTags(false);
       }
     };
 
-    fetchTags();
+    fetchProjectData();
   }, [projectId]);
 
   // Bottom sheet refs
   const stateSheetRef = useRef<BottomSheetModal>(null);
   const prioritySheetRef = useRef<BottomSheetModal>(null);
   const tagsSheetRef = useRef<BottomSheetModal>(null);
+  const assigneeSheetRef = useRef<BottomSheetModal>(null);
 
   let tagsLabel = "Select tags";
   if (isLoadingTags) {
@@ -162,12 +186,22 @@ export default function CreateTaskScreen() {
             <Text className="text-sm font-medium text-muted-foreground">
               Assignee
             </Text>
-            <TextInput
-              className="bg-muted text-foreground p-4 rounded-xl text-base"
-              placeholder="Ex: John Doe"
-              value={assignee}
-              onChangeText={setAssignee}
-            />
+            <Pressable
+              className={`p-4 rounded-xl border ${assignee ? "bg-card border-primary/30" : "bg-muted border-transparent"}`}
+              onPress={() => assigneeSheetRef.current?.present()}
+            >
+              <Text
+                className={`text-base ${assignee ? "text-foreground font-medium" : "text-muted-foreground"}`}
+              >
+                {(() => {
+                  if (!assignee) return "Select assignee";
+                  const member = projectMembers.find((m) => m.id === assignee);
+                  return member
+                    ? `${member.first_name} ${member.last_name}`
+                    : "Unknown User";
+                })()}
+              </Text>
+            </Pressable>
           </View>
 
           {/* Tags */}
@@ -218,6 +252,24 @@ export default function CreateTaskScreen() {
         options={TASK_PRIORITY_OPTIONS}
         selectedValue={priority}
         onSelect={setPriority}
+      />
+
+      <SearchableSelectionSheet
+        ref={assigneeSheetRef}
+        title="Select Assignee"
+        options={[
+          { value: "", label: "Unassigned" },
+          ...projectMembers.map((m) => ({
+            value: m.id || `unknown-${Math.random()}`,
+            label:
+              m.first_name && m.last_name
+                ? `${m.first_name} ${m.last_name}`
+                : m.email || m.id || "Unknown User",
+          })),
+        ]}
+        selectedValue={assignee}
+        onSelect={setAssignee}
+        placeholder="Filter members..."
       />
 
       <MultipleSelectionSheet

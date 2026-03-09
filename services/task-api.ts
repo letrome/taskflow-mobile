@@ -70,6 +70,7 @@ export const taskApi = {
       state: string;
       priority: string;
       due_date: string;
+      assignee: string | null;
     }>,
   ) => {
     const token = await getToken();
