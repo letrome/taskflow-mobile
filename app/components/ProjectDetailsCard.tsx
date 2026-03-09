@@ -2,15 +2,18 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import type { Project } from "@/types/project";
+import type { User } from "@/types/user";
 
 type ProjectDetailsCardProps = Readonly<{
   project: Project;
+  projectOwner?: User | null;
   updateProject: (updates: Partial<Project>) => void;
   setProject: (project: Project) => void;
 }>;
 
 export default function ProjectDetailsCard({
   project,
+  projectOwner,
   updateProject,
   setProject,
 }: ProjectDetailsCardProps) {
@@ -73,6 +76,17 @@ export default function ProjectDetailsCard({
               : "-"}
           </Text>
         </TouchableOpacity>
+      </View>
+
+      <View className="mt-4 pt-4 border-t border-border/50">
+        <Text className="text-sm font-medium text-foreground">
+          Created by:{" "}
+          <Text className="text-muted-foreground font-normal">
+            {projectOwner
+              ? `${projectOwner.first_name} ${projectOwner.last_name}`
+              : project.created_by}
+          </Text>
+        </Text>
       </View>
 
       {datePickerConfig.show && (

@@ -156,7 +156,43 @@ export const projectApi = {
     let result = null;
     try {
       result = await response.json();
-    } catch (e) {
+    } catch {
+      // Ignore
+    }
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  addProjectMember: async (id: string, user_id: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/projects/${id}/members`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ members: [user_id] }),
+    });
+    const result = await response.json();
+    return { ok: response.ok, status: response.status, data: result };
+  },
+
+  deleteProjectMember: async (id: string, user_id: string) => {
+    const token = await getToken();
+    const response = await fetch(
+      `${API_URL}/projects/${id}/members/${user_id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    // For DELETE, there might not be a JSON response body
+    let result = null;
+    try {
+      result = await response.json();
+    } catch {
       // Ignore
     }
     return { ok: response.ok, status: response.status, data: result };

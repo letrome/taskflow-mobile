@@ -7,6 +7,7 @@ export type Project = {
   status: Status;
   start_date?: string | null;
   end_date?: string | null;
-  members?: unknown[];
+  members?: string[];
   tags?: string[];
+  created_by?: string;
 };
