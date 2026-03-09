@@ -103,9 +103,39 @@ export const projectApi = {
     return { ok: response.ok, status: response.status, data: result };
   },
 
-  getTasks: async (id: string) => {
+  getTasks: async (
+    id: string,
+    params?: {
+      state?: string[];
+      priority?: string[];
+      tags?: string[];
+      sort?: string[];
+    },
+  ) => {
     const token = await getToken();
-    const response = await fetch(`${API_URL}/projects/${id}/tasks`, {
+    let url = `${API_URL}/projects/${id}/tasks`;
+
+    if (params) {
+      const queryParams = new URLSearchParams();
+      if (params.state && params.state.length > 0) {
+        queryParams.append("state", params.state.join(","));
+      }
+      if (params.priority && params.priority.length > 0) {
+        queryParams.append("priority", params.priority.join(","));
+      }
+      if (params.tags && params.tags.length > 0) {
+        queryParams.append("tags", params.tags.join(","));
+      }
+      if (params.sort && params.sort.length > 0) {
+        queryParams.append("sort", params.sort.join(","));
+      }
+      const queryString = queryParams.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+    }
+
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -20,8 +20,16 @@ const fetchProject = async (id: string) => {
   return null;
 };
 
-const fetchTasks = async (id: string) => {
-  const response = await projectApi.getTasks(id);
+const fetchTasks = async (
+  id: string,
+  params?: {
+    state?: string[];
+    priority?: string[];
+    tags?: string[];
+    sort?: string[];
+  },
+) => {
+  const response = await projectApi.getTasks(id, params);
   if (response.ok) {
     return response.data;
   }
@@ -43,6 +51,12 @@ const fetchTags = async (id: string) => {
 export function useProjectDetails(id: string) {
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[] | null>(null);
+  const [taskParams, setTaskParams] = useState<{
+    state?: string[];
+    priority?: string[];
+    tags?: string[];
+    sort?: string[];
+  }>({});
   const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
   const [project_members, setProjectMembers] = useState<User[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -94,7 +108,7 @@ export function useProjectDetails(id: string) {
         }
       };
       const loadTasks = async () => {
-        const data = await fetchTasks(id);
+        const data = await fetchTasks(id, taskParams);
         if (data) setTasks(data);
       };
       const loadTags = async () => {
@@ -113,7 +127,7 @@ export function useProjectDetails(id: string) {
         loadTags();
         loadCurrentUser();
       }
-    }, [id]),
+    }, [id, taskParams]),
   );
 
   const updateProject = async (updates: Partial<Project> = {}) => {
@@ -190,6 +204,8 @@ export function useProjectDetails(id: string) {
     projectOwner,
     setProject,
     tasks,
+    taskParams,
+    setTaskParams,
     tags,
     project_members,
     currentUserId,

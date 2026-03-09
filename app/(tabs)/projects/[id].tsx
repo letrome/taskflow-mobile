@@ -14,6 +14,8 @@ export default function ProjectDetailsScreen() {
     project,
     projectOwner,
     tasks,
+    taskParams,
+    setTaskParams,
     tags,
     project_members,
     isOwner,
@@ -73,7 +75,13 @@ export default function ProjectDetailsScreen() {
       />
 
       {/* Task list */}
-      <TaskList tasks={tasks || []} onViewTask={viewTask} />
+      <TaskList
+        tasks={tasks || []}
+        taskParams={taskParams}
+        setTaskParams={setTaskParams}
+        projectTags={tags}
+        onViewTask={viewTask}
+      />
 
       {/* Create task button */}
       <CreateElement onPress={createTask} />
