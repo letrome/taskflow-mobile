@@ -13,6 +13,7 @@ export default function ProjectsLayout() {
         name="create-project"
         options={{ headerShown: true, title: "New Project" }}
       />
+      <Stack.Screen name="tasks/[id]" options={{ headerShown: false}} />
     </Stack>
   );
 }
