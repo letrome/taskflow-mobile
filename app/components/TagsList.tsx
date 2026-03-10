@@ -57,14 +57,14 @@ export default function TagsList({
           {editable && (
             <View className="flex-row items-center mt-2">
               {isAdding ? (
-                <View className="flex-row items-center bg-muted rounded-full px-3 py-0 border border-primary/30 h-8">
+                <View className="flex-row items-center bg-muted rounded-full px-3 py-1.5 border border-primary/30">
                   <TextInput
                     value={newTagName}
                     onChangeText={setNewTagName}
                     placeholder="New tag..."
                     onSubmitEditing={handleAdd}
                     autoFocus
-                    className="text-sm min-w-[80px] h-full"
+                    className="text-sm min-w-[80px] p-0"
                     onBlur={() => {
                       if (!newTagName.trim()) setIsAdding(false);
                     }}
