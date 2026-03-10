@@ -39,11 +39,11 @@ function FilterChip({
     <TouchableOpacity
       onPress={onPress}
       className={`px-4 py-2 rounded-full mr-2 mb-2 border ${
-        isActive ? "bg-primary border-primary" : "bg-transparent border-input"
+        isActive ? "bg-primary border-primary" : "bg-white/5 border-white/10"
       }`}
     >
       <Text
-        className={`font-medium ${isActive ? "text-primary-foreground" : "text-foreground"}`}
+        className={`font-medium ${isActive ? "text-primary-foreground" : "text-white/70"}`}
       >
         {label}
       </Text>
@@ -104,7 +104,7 @@ export default function TaskList({
           <Text
             className={`text-sm font-medium ml-1.5 ${hasActiveFilters ? "text-primary" : "text-foreground"}`}
           >
-            Objectifs & Tris {hasActiveFilters ? "(Actif)" : ""}
+            Filters & Sort {hasActiveFilters ? "(Active)" : ""}
           </Text>
         </TouchableOpacity>
       </View>
@@ -135,16 +135,16 @@ export default function TaskList({
       >
         <BottomSheetScrollView contentContainerStyle={{ padding: 20 }}>
           <Text className="text-2xl font-bold text-white mb-6">
-            Filtrer & Trier
+            Filters & Sort
           </Text>
 
           <View className="mb-6">
             <Text className="text-lg font-semibold text-white mb-3">
-              Trier par
+              Sort by
             </Text>
             <View className="flex-row flex-wrap">
               <FilterChip
-                label="Statut (A-Z)"
+                label="State (A-Z)"
                 isActive={taskParams.sort?.includes("state") ?? false}
                 onPress={
                   () =>
@@ -155,21 +155,21 @@ export default function TaskList({
                 }
               />
               <FilterChip
-                label="Statut (Z-A)"
+                label="State (Z-A)"
                 isActive={taskParams.sort?.includes("-state") ?? false}
                 onPress={() =>
                   setTaskParams((p) => ({ ...p, sort: ["-state"] }))
                 }
               />
               <FilterChip
-                label="Priorité (Haute)"
+                label="Priority (High)"
                 isActive={taskParams.sort?.includes("-priority") ?? false}
                 onPress={() =>
                   setTaskParams((p) => ({ ...p, sort: ["-priority"] }))
                 }
               />
               <FilterChip
-                label="Priorité (Basse)"
+                label="Priority (Low)"
                 isActive={taskParams.sort?.includes("priority") ?? false}
                 onPress={() =>
                   setTaskParams((p) => ({ ...p, sort: ["priority"] }))
@@ -180,7 +180,7 @@ export default function TaskList({
 
           <View className="mb-6">
             <Text className="text-lg font-semibold text-white mb-3">
-              Statut
+              State
             </Text>
             <View className="flex-row flex-wrap">
               {TASK_STATE_OPTIONS.map((state) => (
@@ -201,7 +201,7 @@ export default function TaskList({
 
           <View className="mb-6">
             <Text className="text-lg font-semibold text-white mb-3">
-              Priorité
+              Priority
             </Text>
             <View className="flex-row flex-wrap">
               {TASK_PRIORITY_OPTIONS.map((priority) => (
@@ -250,7 +250,7 @@ export default function TaskList({
             onPress={() => setTaskParams({})}
           >
             <Text className="text-primary-foreground font-bold text-base">
-              Réinitialiser les filtres
+              Reset filters
             </Text>
           </TouchableOpacity>
         </BottomSheetScrollView>
