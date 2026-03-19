@@ -56,11 +56,8 @@ export default function TaskDetailsCard({
   const assigneeOptions = [
     { value: "unassigned", label: "Unassigned" },
     ...projectMembers.map((m) => ({
-      value: m.id || `unknown-${Math.random()}`,
-      label:
-        m.first_name && m.last_name
-          ? `${m.first_name} ${m.last_name}`
-          : m.email || m.id || "Unknown User",
+      value: m.id,
+      label: `${m.first_name} ${m.last_name}`,
     })),
   ];
 

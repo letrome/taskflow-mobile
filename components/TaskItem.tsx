@@ -15,7 +15,10 @@ export default function TaskItem({ item, onViewTask }: TaskItemProps) {
   }
 
   return (
-    <Pressable onPress={() => onViewTask?.(item.id)} className="bg-card mb-3 p-4 rounded-xl border border-border/50 flex-row items-center shadow-sm">
+    <Pressable
+      onPress={() => onViewTask?.(item.id)}
+      className="bg-card mb-3 p-4 rounded-xl border border-border/50 flex-row items-center shadow-sm"
+    >
       <View
         className={`w-4 h-4 rounded-full border border-primary mr-4 ${statusColor}`}
       />

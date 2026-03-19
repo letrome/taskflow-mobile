@@ -5,14 +5,14 @@ import { userApi } from "@/services/user-api";
 import type { User } from "@/types/user";
 
 type ProjectMembersListProps = Readonly<{
-  project_members: readonly User[];
+  projectMembers: readonly User[];
   onAddProjectMember?: (user: User) => void;
   onDeleteProjectMember?: (userId: string) => void;
   editable?: boolean;
 }>;
 
 export default function ProjectMembersList({
-  project_members,
+  projectMembers,
   onAddProjectMember,
   onDeleteProjectMember,
   editable = false,
@@ -34,7 +34,7 @@ export default function ProjectMembersList({
       const response = await userApi.searchUsers(text);
       if (response.ok && Array.isArray(response.data)) {
         // Filter out existing members
-        const existingIds = new Set(project_members.map((m) => m.id));
+        const existingIds = new Set(projectMembers.map((m) => m.id));
         const filtered = response.data.filter(
           (u: User) => !existingIds.has(u.id),
         );
@@ -58,7 +58,7 @@ export default function ProjectMembersList({
     setSearchResults([]);
     setIsAdding(false);
   };
-  if (!editable && (!project_members || project_members.length === 0))
+  if (!editable && (!projectMembers || projectMembers.length === 0))
     return null;
   const renderSearchResults = () => {
     if (isSearching) {
@@ -106,7 +106,7 @@ export default function ProjectMembersList({
       </Text>
       <View className="bg-card rounded-2xl p-5 shadow-sm border border-border">
         <View className="flex-row flex-wrap -mt-2">
-          {project_members.map((item, index) => (
+          {projectMembers.map((item, index) => (
             <View
               key={item?.id ? item.id.toString() : `member-fallback-${index}`}
               className="flex-row items-center bg-primary/10 px-3 py-1.5 rounded-full mr-2 mt-2"

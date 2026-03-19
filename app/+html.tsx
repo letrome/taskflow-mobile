@@ -1,6 +1,10 @@
 import { ScrollViewStyleReset } from "expo-router/html";
 
-export default function Root({ children }: { children: React.ReactNode }) {
+type Props = Readonly<{
+  children: React.ReactNode;
+}>;
+
+export default function Root({ children }: Props) {
   return (
     <html lang="en">
       <head>

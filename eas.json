@@ -13,13 +13,13 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://prod.taskflow-backend.laromierre.com"
+        "EXPO_PUBLIC_API_URL": "https://preprod-api-taskflow.laromierre.com"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://prod.taskflow-backend.laromierre.com"
+        "EXPO_PUBLIC_API_URL": "https://api-taskflow.laromierre.com"
       }
     }
   },

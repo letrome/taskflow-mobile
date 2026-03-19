@@ -15,7 +15,6 @@ expo-env.d.ts
 *.jks
 *.p8
 *.p12
-*.key
 *.mobileprovision
 
 # Metro
@@ -34,11 +33,16 @@ pnpm-debug.log*
 
 # macOS
 .DS_Store
-*.pem
 
 # local env files
 .env*.local
 .env
+
+# sensitive files
+*.pem
+*.crt
+*.key
+sonarqube.crt
 
 # typescript
 *.tsbuildinfo
@@ -50,7 +54,14 @@ pnpm-debug.log*
 # builds
 build-*.apk
 build-*.aab
+build-*.ipa
 
+# NativeWind
 nativewind-env.d.ts
 
-bruno
+# API Testing
+bruno/
+
+# SonarQube
+sonar-project.properties
+.scannerwork

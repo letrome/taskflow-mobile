@@ -1,35 +1,13 @@
-import { getToken } from "./auth-storage";
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { apiClient } from "./api-client";
 
 export const userApi = {
-  getUser: async (id: string) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/users/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+  getUser: (id: string) => {
+    return apiClient.get(`/users/${id}`);
   },
 
-  searchUsers: async (query: string, projectId?: string) => {
-    const token = await getToken();
-    let url = `${API_URL}/users/search?query=${encodeURIComponent(query)}`;
-    if (projectId) {
-      url += `&projectId=${projectId}`;
-    }
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+  searchUsers: (query: string, projectId?: string) => {
+    return apiClient.get("/users/search", {
+      params: { query, projectId },
     });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
   },
 };

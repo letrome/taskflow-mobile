@@ -6,14 +6,14 @@ export default function ProjectsLayout() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="[id]" options={{ headerShown: false }} />
       <Stack.Screen
-        name="create-task"
+        name="tasks/create-task"
         options={{ headerShown: true, title: "New Task" }}
       />
       <Stack.Screen
         name="create-project"
         options={{ headerShown: true, title: "New Project" }}
       />
-      <Stack.Screen name="tasks/[id]" options={{ headerShown: false}} />
+      <Stack.Screen name="tasks/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }

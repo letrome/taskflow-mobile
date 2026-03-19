@@ -10,19 +10,25 @@ export function useCreateProject() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async () => {
-    try {
-      if (!title || !description || !startDate || !endDate) {
-        setError("Please fill in all required fields");
-        return;
-      }
+  const isFormValid =
+    title.trim() !== "" &&
+    description.trim() !== "" &&
+    startDate !== "" &&
+    endDate !== "";
 
+  const handleSubmit = async () => {
+    if (!isFormValid) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    try {
       setIsSubmitting(true);
       setError("");
 
       const payload = {
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim(),
         start_date: startDate,
         end_date: endDate,
         status: "active",
@@ -55,6 +61,7 @@ export function useCreateProject() {
     endDate,
     setEndDate,
     isSubmitting,
+    isFormValid,
     error,
     handleSubmit,
   };

@@ -14,6 +14,10 @@ export default function RegisterScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const routeToLogin = () => {
+    router.push(`/auth/login`);
+  };
+
   const handleRegister = async () => {
     setError(null);
 
@@ -41,7 +45,7 @@ export default function RegisterScreen() {
             Account created successfully!
           </Text>
           <Pressable
-            onPress={() => router.replace("/auth/login")}
+            onPress={routeToLogin}
             className="bg-primary p-4 rounded-2xl items-center shadow-sm w-full"
           >
             <Text className="text-primary-foreground font-bold text-lg">
@@ -61,27 +65,22 @@ export default function RegisterScreen() {
         </Text>
         <TextInput
           placeholder="First Name"
-          placeholderTextColor="#888"
           onChangeText={(val) => setFormData({ ...formData, first_name: val })}
           className="border border-border rounded-xl mb-4 p-4 text-foreground bg-background text-base"
         />
         <TextInput
           placeholder="Last Name"
-          placeholderTextColor="#888"
           onChangeText={(val) => setFormData({ ...formData, last_name: val })}
           className="border border-border rounded-xl mb-4 p-4 text-foreground bg-background text-base"
         />
         <TextInput
           placeholder="Email"
-          placeholderTextColor="#888"
           keyboardType="email-address"
-          autoCapitalize="none"
           onChangeText={(val) => setFormData({ ...formData, email: val })}
           className="border border-border rounded-xl mb-4 p-4 text-foreground bg-background text-base"
         />
         <TextInput
           placeholder="Password"
-          placeholderTextColor="#888"
           secureTextEntry
           onChangeText={(val) => setFormData({ ...formData, password: val })}
           className="border border-border rounded-xl mb-6 p-4 text-foreground bg-background text-base"
@@ -105,7 +104,7 @@ export default function RegisterScreen() {
           className="items-center mt-6 p-2"
         >
           <Text className="text-foreground text-base">
-            Already have an account?{" "}
+            {"Already have an account? "}
             <Text className="text-primary font-bold">Login</Text>
           </Text>
         </Pressable>

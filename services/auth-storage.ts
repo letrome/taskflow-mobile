@@ -46,6 +46,5 @@ export const getCurrentUserId = async () => {
   if (!token) return null;
 
   const decoded = decodeToken(token);
-  // Support both typical JWT formats (sub or id)
   return decoded?.id || decoded?.sub || decoded?.userId || null;
 };

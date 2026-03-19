@@ -1,10 +1,10 @@
 import { Text, View } from "react-native";
 import type { User } from "@/types/user";
 
-type UserProfileProps = {
+type UserProfileProps = Readonly<{
   user: User | null;
   loading: boolean;
-};
+}>;
 
 export default function UserProfile({ user, loading }: UserProfileProps) {
   if (loading) {

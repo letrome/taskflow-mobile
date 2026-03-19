@@ -1,30 +1,48 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { router } from "expo-router";
 import { useCallback, useState } from "react";
-import { deleteToken } from "@/services/auth-storage";
 import { projectApi } from "@/services/project-api";
 import type { Project } from "@/types/project";
 
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProjects = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    setError(null);
+
+    try {
+      const response = await projectApi.getProjects();
+      if (response.ok) {
+        setProjects(response.data);
+      } else {
+        setError("Failed to fetch projects");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchProjects = async () => {
-        const response = await projectApi.getProjects();
-        if (response.ok) {
-          setProjects(response.data);
-        }
-        if (response.status === 401) {
-          await deleteToken();
-          router.replace("/auth/login");
-        }
-      };
       fetchProjects();
-    }, []),
+    }, [fetchProjects]),
   );
 
   return {
     projects,
+    isLoading,
+    isRefreshing,
+    error,
+    refresh: () => fetchProjects(true),
   };
 }

@@ -1,7 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
-import { deleteToken } from "@/services/auth-storage";
 import { projectApi } from "@/services/project-api";
 import { taskApi } from "@/services/task-api";
 import { userApi } from "@/services/user-api";
@@ -13,65 +12,102 @@ const fetchTask = async (id: string) => {
   if (response.ok) {
     return response.data;
   }
-  if (response.status === 401) {
-    await deleteToken();
-    router.replace("/auth/login");
-  }
   return null;
 };
 
 const fetchProjectTags = async (projectId: string) => {
   const response = await projectApi.getProjectTags(projectId);
-  if (response.ok) {
-    return response.data;
+  if (response.ok && Array.isArray(response.data)) {
+    return response.data.filter(
+      (t: { id: string; name: string }) =>
+        (t.id && t.id.trim() !== "") || (t.name && t.name.trim() !== ""),
+    );
   }
   return [];
+};
+
+const mapTagsFromIds = (
+  tagIds: string[],
+  projectTags: { id: string; name: string }[],
+) => {
+  return tagIds.map((tagId) => {
+    const found = projectTags.find((pt) => pt.id === tagId);
+    return found ? { id: tagId, name: found.name } : { id: tagId, name: tagId };
+  });
 };
 
 export function useTaskDetails(id: string) {
   const [task, setTask] = useState<Task | null>(null);
   const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
   const [assigneeUser, setAssigneeUser] = useState<User | null>(null);
+  const [projectTags, setProjectTags] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [projectMembers, setProjectMembers] = useState<User[]>([]);
+
+  const loadAssignee = useCallback(async (assigneeId: string | null) => {
+    if (!assigneeId) {
+      setAssigneeUser(null);
+      return;
+    }
+    const userRes = await userApi.getUser(assigneeId);
+    if (userRes.ok) {
+      setAssigneeUser(userRes.data.user || userRes.data);
+    }
+  }, []);
+
+  const loadProjectDetails = useCallback(
+    async (projectId: string, taskTags: string[]) => {
+      const [allProjectTags, projectRes] = await Promise.all([
+        fetchProjectTags(projectId),
+        projectApi.getProject(projectId),
+      ]);
+
+      setProjectTags(
+        allProjectTags.map((t) => ({ value: t.id, label: t.name })),
+      );
+      setTags(
+        taskTags.length > 0 ? mapTagsFromIds(taskTags, allProjectTags) : [],
+      );
+
+      if (projectRes.ok && projectRes.data) {
+        const memberIds = projectRes.data.members || [];
+        if (memberIds.length > 0) {
+          const usersResponses = await Promise.all(
+            memberIds.map((id: string) => userApi.getUser(id)),
+          );
+          setProjectMembers(
+            usersResponses
+              .filter((res) => res.ok && res.data)
+              .map((res) => (res.data.user || res.data) as User),
+          );
+        } else {
+          setProjectMembers([]);
+        }
+      }
+    },
+    [],
+  );
 
   useFocusEffect(
     useCallback(() => {
       const loadTaskAndTags = async () => {
         const data = await fetchTask(id);
-        if (data) {
-          setTask(data);
+        if (!data) return;
 
-          if (data.assignee) {
-            const userRes = await userApi.getUser(data.assignee);
-            if (userRes.ok) {
-              setAssigneeUser(userRes.data.user || userRes.data);
-            }
-          } else {
-            setAssigneeUser(null);
-          }
-
-          if (data.project && data.tags && data.tags.length > 0) {
-            const projectTags = await fetchProjectTags(data.project);
-
-            const taskTagsDetails = data.tags.map((tagId: string) => {
-              const found = projectTags.find(
-                (pt: { id: string; name: string }) => pt.id === tagId,
-              );
-              return found
-                ? { id: tagId, name: found.name }
-                : { id: tagId, name: tagId };
-            });
-
-            setTags(taskTagsDetails);
-          } else {
-            setTags([]);
-          }
-        }
+        setTask(data);
+        await Promise.all([
+          loadAssignee(data.assignee),
+          data.project
+            ? loadProjectDetails(data.project, data.tags || [])
+            : Promise.resolve(),
+        ]);
       };
 
       if (id) {
         loadTaskAndTags();
       }
-    }, [id]),
+    }, [id, loadAssignee, loadProjectDetails]),
   );
 
   const updateTask = async (updates: Partial<Task> = {}) => {
@@ -90,16 +126,9 @@ export function useTaskDetails(id: string) {
     if (response.ok) {
       const newData = response.data;
       setTask(newData);
-      if (newData.assignee && newData.assignee !== assigneeUser?.id) {
-        const userRes = await userApi.getUser(newData.assignee);
-        if (userRes.ok) setAssigneeUser(userRes.data.user || userRes.data);
-      } else if (!newData.assignee) {
-        setAssigneeUser(null);
+      if (newData.assignee !== assigneeUser?.id) {
+        await loadAssignee(newData.assignee);
       }
-    }
-    if (response.status === 401) {
-      await deleteToken();
-      router.replace("/auth/login");
     }
   };
 
@@ -107,10 +136,6 @@ export function useTaskDetails(id: string) {
     const response = await taskApi.deleteTask(id);
     if (response.ok) {
       router.back();
-    }
-    if (response.status === 401) {
-      await deleteToken();
-      router.replace("/auth/login");
     }
   };
 
@@ -120,6 +145,28 @@ export function useTaskDetails(id: string) {
     const response = await taskApi.addTaskTag(id, tagId);
     if (!response.ok) {
       setTags(previousTags);
+    }
+  };
+
+  const addTagByTagName = async (name: string) => {
+    if (!task?.project) return;
+    let tagId: string | undefined = projectTags.find(
+      (t) => t.label.toLowerCase() === name.toLowerCase(),
+    )?.value;
+
+    if (!tagId) {
+      const response = await projectApi.addProjectTag(task.project, name);
+      if (response.ok && response.data) {
+        tagId = response.data.id;
+        setProjectTags((prev) => [
+          ...prev,
+          { value: response.data.id, label: response.data.name },
+        ]);
+      }
+    }
+
+    if (tagId) {
+      addTag(tagId, name);
     }
   };
 
@@ -137,10 +184,12 @@ export function useTaskDetails(id: string) {
     task,
     setTask,
     tags,
+    projectTags,
+    projectMembers,
     assigneeUser,
     updateTask,
     deleteCurrentTask,
-    addTag,
+    addTag: addTagByTagName,
     removeTag,
   };
 }

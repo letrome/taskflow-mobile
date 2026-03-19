@@ -13,6 +13,13 @@ export const TASK_PRIORITY_OPTIONS = [
 export type State = (typeof TASK_STATE_OPTIONS)[number]["value"];
 export type Priority = (typeof TASK_PRIORITY_OPTIONS)[number]["value"];
 
+export type TaskParams = {
+  state?: string[];
+  priority?: string[];
+  tags?: string[];
+  sort?: string[];
+};
+
 export type Task = {
   id: string;
   title: string;

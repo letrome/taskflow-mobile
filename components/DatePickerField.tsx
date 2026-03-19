@@ -1,6 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
+import FormField from "./FormField";
 
 type DatePickerFieldProps = Readonly<{
   label: string;
@@ -27,8 +28,11 @@ export default function DatePickerField({
   const pickerDate = date && date !== "" ? new Date(date) : new Date();
 
   return (
-    <View className={containerClassName || "gap-y-2"}>
-      <Text className="text-sm font-medium text-muted-foreground">{label}</Text>
+    <FormField
+      label={label.replace(" *", "")}
+      required={label.includes("*")}
+      containerClassName={containerClassName}
+    >
       <Pressable
         className={`p-4 rounded-xl border ${
           date ? "bg-card border-primary/30" : "bg-muted border-transparent"
@@ -51,6 +55,6 @@ export default function DatePickerField({
           onChange={onDateChange}
         />
       )}
-    </View>
+    </FormField>
   );
 }

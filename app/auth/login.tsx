@@ -12,6 +12,10 @@ export default function LoginScreen() {
 
   const [error, setError] = useState<string | null>(null);
 
+  const routeToRegister = () => {
+    router.push(`/auth/register`);
+  };
+
   const handleLogin = async () => {
     setError(null);
 
@@ -40,7 +44,6 @@ export default function LoginScreen() {
         </Text>
         <TextInput
           placeholder="Email"
-          placeholderTextColor="#888"
           keyboardType="email-address"
           autoCapitalize="none"
           onChangeText={(val) => setFormData({ ...formData, email: val })}
@@ -48,7 +51,6 @@ export default function LoginScreen() {
         />
         <TextInput
           placeholder="Password"
-          placeholderTextColor="#888"
           secureTextEntry
           onChangeText={(val) => setFormData({ ...formData, password: val })}
           className="border border-border rounded-xl mb-6 p-4 text-foreground bg-background text-base"
@@ -57,9 +59,6 @@ export default function LoginScreen() {
         {error && (
           <View className="mb-4">
             <Text className="text-red-500 text-center mb-2">{error}</Text>
-            <Text className="text-[10px] text-gray-500 text-center">
-              API: {process.env.EXPO_PUBLIC_API_URL}
-            </Text>
           </View>
         )}
 
@@ -72,12 +71,9 @@ export default function LoginScreen() {
           </Text>
         </Pressable>
 
-        <Pressable
-          onPress={() => router.replace("/auth/register")}
-          className="items-center mt-6 p-2"
-        >
+        <Pressable onPress={routeToRegister} className="items-center mt-6 p-2">
           <Text className="text-foreground text-base">
-            Don't have an account?{" "}
+            {"Don't have an account? "}
             <Text className="text-primary font-bold">Register</Text>
           </Text>
         </Pressable>

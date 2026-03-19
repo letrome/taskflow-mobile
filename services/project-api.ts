@@ -1,22 +1,11 @@
-import { getToken } from "./auth-storage";
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { apiClient } from "./api-client";
 
 export const projectApi = {
-  getProjects: async () => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/projects`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+  getProjects: () => {
+    return apiClient.get("/projects");
   },
 
-  createProject: async (data: {
+  createProject: (data: {
     title: string;
     description: string;
     start_date: string;
@@ -24,33 +13,14 @@ export const projectApi = {
     status: string;
     members: string[];
   }) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/projects`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+    return apiClient.post("/projects", data);
   },
 
-  getProject: async (id: string) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/projects/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+  getProject: (id: string) => {
+    return apiClient.get(`/projects/${id}`);
   },
 
-  updateProject: async (
+  updateProject: (
     id: string,
     data: Partial<{
       title: string;
@@ -61,20 +31,10 @@ export const projectApi = {
       members: string[];
     }>,
   ) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/projects/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+    return apiClient.put(`/projects/${id}`, data);
   },
 
-  createProjectTask: async (
+  createProjectTask: (
     projectId: string,
     data: {
       title: string;
@@ -86,24 +46,12 @@ export const projectApi = {
       tags: string[];
     },
   ) => {
-    const token = await getToken();
-
     const { assignee, ...restData } = data;
     const payload = assignee === null ? restData : { ...restData, assignee };
-
-    const response = await fetch(`${API_URL}/projects/${projectId}/tasks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+    return apiClient.post(`/projects/${projectId}/tasks`, payload);
   },
 
-  getTasks: async (
+  getTasks: (
     id: string,
     params?: {
       state?: string[];
@@ -112,119 +60,26 @@ export const projectApi = {
       sort?: string[];
     },
   ) => {
-    const token = await getToken();
-    let url = `${API_URL}/projects/${id}/tasks`;
-
-    if (params) {
-      const queryParams = new URLSearchParams();
-      if (params.state && params.state.length > 0) {
-        queryParams.append("state", params.state.join(","));
-      }
-      if (params.priority && params.priority.length > 0) {
-        queryParams.append("priority", params.priority.join(","));
-      }
-      if (params.tags && params.tags.length > 0) {
-        queryParams.append("tags", params.tags.join(","));
-      }
-      if (params.sort && params.sort.length > 0) {
-        queryParams.append("sort", params.sort.join(","));
-      }
-      const queryString = queryParams.toString();
-      if (queryString) {
-        url += `?${queryString}`;
-      }
-    }
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+    return apiClient.get(`/projects/${id}/tasks`, { params });
   },
 
-  getProjectTags: async (id: string) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/projects/${id}/tags`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+  getProjectTags: (id: string) => {
+    return apiClient.get(`/projects/${id}/tags`);
   },
 
-  addProjectTag: async (projectId: string, name: string) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/projects/${projectId}/tags`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ name }),
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+  addProjectTag: (projectId: string, name: string) => {
+    return apiClient.post(`/projects/${projectId}/tags`, { name });
   },
 
-  deleteTag: async (tagId: string) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/tags/${tagId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    // For DELETE, there might not be a JSON response body
-    let result = null;
-    try {
-      result = await response.json();
-    } catch {
-      // Ignore
-    }
-    return { ok: response.ok, status: response.status, data: result };
+  deleteTag: (tagId: string) => {
+    return apiClient.delete(`/tags/${tagId}`);
   },
 
-  addProjectMember: async (id: string, user_id: string) => {
-    const token = await getToken();
-    const response = await fetch(`${API_URL}/projects/${id}/members`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ members: [user_id] }),
-    });
-    const result = await response.json();
-    return { ok: response.ok, status: response.status, data: result };
+  addProjectMember: (id: string, user_id: string) => {
+    return apiClient.post(`/projects/${id}/members`, { members: [user_id] });
   },
 
-  deleteProjectMember: async (id: string, user_id: string) => {
-    const token = await getToken();
-    const response = await fetch(
-      `${API_URL}/projects/${id}/members/${user_id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    // For DELETE, there might not be a JSON response body
-    let result = null;
-    try {
-      result = await response.json();
-    } catch {
-      // Ignore
-    }
-    return { ok: response.ok, status: response.status, data: result };
+  deleteProjectMember: (id: string, user_id: string) => {
+    return apiClient.delete(`/projects/${id}/members/${user_id}`);
   },
 };

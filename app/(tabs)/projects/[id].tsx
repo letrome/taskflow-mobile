@@ -1,12 +1,12 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
-import CreateElement from "@/app/components/CreateElement";
-import ProjectMembersList from "@/app/components/ProjectMembersList";
-import TagsList from "@/app/components/TagsList";
-import TaskList from "@/app/components/TaskList";
+import CreateElement from "@/components/CreateElement";
+import ProjectDetailsCard from "@/components/ProjectDetailsCard";
+import ProjectHeader from "@/components/ProjectHeader";
+import ProjectMembersList from "@/components/ProjectMembersList";
+import ProjectTasks from "@/components/ProjectTasks";
+import TagsList from "@/components/TagsList";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
-import ProjectDetailsCard from "../../components/ProjectDetailsCard";
-import ProjectHeader from "../../components/ProjectHeader";
 
 export default function ProjectDetailsScreen() {
   const { id }: { id: string } = useLocalSearchParams();
@@ -17,7 +17,7 @@ export default function ProjectDetailsScreen() {
     taskParams,
     setTaskParams,
     tags,
-    project_members,
+    projectMembers,
     isOwner,
     setProject,
     updateProject,
@@ -25,9 +25,10 @@ export default function ProjectDetailsScreen() {
     deleteTag,
     addProjectMember,
     deleteProjectMember,
+    isRefreshing,
+    refresh,
   } = useProjectDetails(id);
 
-  // Loading state
   if (!project) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
@@ -37,7 +38,7 @@ export default function ProjectDetailsScreen() {
   }
 
   const createTask = () => {
-    router.push(`/projects/create-task?projectId=${id}`);
+    router.push(`/projects/tasks/create-task?projectId=${id}`);
   };
 
   const viewTask = (id: string) => {
@@ -46,44 +47,46 @@ export default function ProjectDetailsScreen() {
 
   return (
     <View className="flex-1 bg-background pt-8 px-4">
-      {/* Project header */}
-      <ProjectHeader
-        project={project}
-        setProject={setProject}
-        updateProject={updateProject}
-      />
-
-      {/* Project details card */}
-      <ProjectDetailsCard
-        project={project}
-        projectOwner={projectOwner}
-        setProject={setProject}
-        updateProject={updateProject}
-      />
-
-      <ProjectMembersList
-        project_members={project_members}
-        editable={isOwner}
-        onAddProjectMember={addProjectMember}
-        onDeleteProjectMember={deleteProjectMember}
-      />
-      <TagsList
-        tags={tags}
-        editable
-        onAddTag={addTag}
-        onDeleteTag={deleteTag}
-      />
-
-      {/* Task list */}
-      <TaskList
+      <ProjectTasks
         tasks={tasks || []}
         taskParams={taskParams}
         setTaskParams={setTaskParams}
         projectTags={tags}
         onViewTask={viewTask}
+        isRefreshing={isRefreshing}
+        onRefresh={refresh}
+        header={
+          <>
+            <ProjectHeader
+              project={project}
+              setProject={setProject}
+              updateProject={updateProject}
+            />
+
+            <ProjectDetailsCard
+              project={project}
+              projectOwner={projectOwner}
+              setProject={setProject}
+              updateProject={updateProject}
+            />
+
+            <ProjectMembersList
+              projectMembers={projectMembers}
+              editable={isOwner}
+              onAddProjectMember={addProjectMember}
+              onDeleteProjectMember={deleteProjectMember}
+            />
+
+            <TagsList
+              tags={tags}
+              editable
+              onAddTag={addTag}
+              onDeleteTag={deleteTag}
+            />
+          </>
+        }
       />
 
-      {/* Create task button */}
       <CreateElement onPress={createTask} />
     </View>
   );

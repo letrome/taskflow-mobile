@@ -4,17 +4,21 @@ type CreateElementButtonProps = Readonly<{
   onPress: () => void;
   isSubmitting: boolean;
   label: string;
+  disabled?: boolean;
 }>;
 
 export default function CreateElementButton({
   onPress,
   isSubmitting,
   label,
+  disabled = false,
 }: CreateElementButtonProps) {
+  const isDisabled = isSubmitting || disabled;
+
   return (
     <Pressable
       className={`flex-row justify-center items-center py-4 rounded-full ${
-        isSubmitting ? "bg-primary/70" : "bg-primary"
+        isDisabled ? "bg-muted border border-border" : "bg-primary"
       }`}
       onPress={onPress}
       disabled={isSubmitting}
@@ -22,7 +26,11 @@ export default function CreateElementButton({
       {isSubmitting ? (
         <ActivityIndicator color="white" />
       ) : (
-        <Text className="text-primary-foreground font-bold text-lg">
+        <Text
+          className={`font-bold text-lg ${
+            isDisabled ? "text-muted-foreground" : "text-primary-foreground"
+          }`}
+        >
           {label}
         </Text>
       )}

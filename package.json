@@ -8,8 +8,12 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "build:android": "ANDROID_HOME=\"$HOME/Library/Android/sdk\" JAVA_HOME=\"/opt/homebrew/opt/openjdk@17\" eas build -p android --profile preview --local",
+    "sonar": "infisical run --projectId=42025cbe-1169-4890-a54a-f5f268f2f371 --env=dev -- sh -c 'export SONAR_SCANNER_OPTS=\"-Dsonar.scanner.skipSslVerification=true\" && export SONAR_TOKEN=sqp_78653505a3e476848fc20e9ccc82697283b430c2 && sonar-scanner -Dsonar.host.url=$SONARQUBE_URL'",
     "lint": "biome check .",
-    "lint:fix": "biome check --write ."
+    "lint:fix": "biome check --write .",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -41,8 +45,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.14",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.1.0",
+    "jest": "^30.3.0",
+    "jest-expo": "^55.0.11",
     "react-test-renderer": "19.1.0",
+    "sonarqube-scanner": "^4.3.4",
     "tailwindcss": "^3.3.2",
     "typescript": "~5.9.2"
   },

@@ -44,7 +44,9 @@ export default function TagsList({
               </Text>
               {editable && onDeleteTag && (
                 <Pressable
-                  onPress={() => onDeleteTag(item.id)}
+                  onPress={() => {
+                    onDeleteTag(item.id);
+                  }}
                   className="ml-2 bg-primary/20 rounded-full p-0.5"
                   hitSlop={8}
                 >

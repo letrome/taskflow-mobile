@@ -6,7 +6,6 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const withCustomNetworkSecurityConfig = (config) => {
-  // Modify AndroidManifest.xml
   config = withAndroidManifest(config, (config) => {
     const mainApplication = config.modResults.manifest.application[0];
     mainApplication.$["android:networkSecurityConfig"] =
@@ -14,7 +13,6 @@ const withCustomNetworkSecurityConfig = (config) => {
     return config;
   });
 
-  // Write the network_security_config.xml
   config = withDangerousMod(config, [
     "android",
     async (config) => {
