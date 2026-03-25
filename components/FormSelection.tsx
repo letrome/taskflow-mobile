@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+import { TouchableOpacity, Text } from "react-native";
 import FormField from "./FormField";
 
 type FormSelectionProps = Readonly<{
@@ -21,14 +21,16 @@ export default function FormSelection({
   disabled,
 }: FormSelectionProps) {
   const hasValue = !!value;
-
+  
   return (
     <FormField
       label={label}
       required={required}
       containerClassName={containerClassName}
     >
-      <Pressable
+      <TouchableOpacity
+        testID="form-selection-pressable"
+        activeOpacity={0.7}
         className={`p-4 rounded-xl border ${
           hasValue ? "bg-card border-primary/30" : "bg-muted border-transparent"
         }`}
@@ -42,7 +44,7 @@ export default function FormSelection({
         >
           {value || placeholder}
         </Text>
-      </Pressable>
+      </TouchableOpacity>
     </FormField>
   );
 }

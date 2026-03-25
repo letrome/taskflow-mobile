@@ -117,6 +117,8 @@ export default function ProjectMembersList({
               {editable && onDeleteProjectMember && (
                 <Pressable
                   onPress={() => onDeleteProjectMember(item.id)}
+                  accessibilityRole="button"
+                  testID={`delete-member-${item.id}`}
                   className="ml-2 bg-primary/20 rounded-full p-0.5"
                   hitSlop={8}
                 >
@@ -144,6 +146,7 @@ export default function ProjectMembersList({
                         setSearchQuery("");
                         setSearchResults([]);
                       }}
+                      testID="cancel-add-member"
                       className="p-2"
                     >
                       <X size={16} className="text-muted-foreground" />
@@ -161,6 +164,8 @@ export default function ProjectMembersList({
               ) : (
                 <Pressable
                   onPress={() => setIsAdding(true)}
+                  accessibilityRole="button"
+                  testID="add-member-button"
                   className="flex-row items-center border border-dashed border-primary/30 px-3 py-1.5 rounded-full self-start"
                 >
                   <Plus size={14} className="text-primary mr-1" />

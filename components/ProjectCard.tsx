@@ -28,6 +28,7 @@ export default function ProjectCard({ item, onPress }: ProjectCardProps) {
   return (
     <Pressable
       onPress={() => onPress(item.id)}
+      accessibilityRole="button"
       className="bg-card w-full p-5 mb-4 rounded-2xl shadow-sm border border-border"
     >
       <View className="flex-row justify-between items-start mb-3">

@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { projectApi } from "@/services/project-api";
 import { taskApi } from "@/services/task-api";
 import { userApi } from "@/services/user-api";
+import { fetchProjectMembersDetails } from "@/services/user-utils";
 import type { Task } from "@/types/task";
 import type { User } from "@/types/user";
 
@@ -51,63 +52,56 @@ export function useTaskDetails(id: string) {
       return;
     }
     const userRes = await userApi.getUser(assigneeId);
-    if (userRes.ok) {
-      setAssigneeUser(userRes.data.user || userRes.data);
+    if (userRes.ok && userRes.data) {
+      const userData = userRes.data.user || userRes.data;
+      if (userData && typeof userData === 'object' && 'id' in userData) {
+        setAssigneeUser(userData as User);
+      }
     }
   }, []);
 
-  const loadProjectDetails = useCallback(
-    async (projectId: string, taskTags: string[]) => {
-      const [allProjectTags, projectRes] = await Promise.all([
-        fetchProjectTags(projectId),
-        projectApi.getProject(projectId),
-      ]);
+  const loadData = useCallback(async () => {
+    const data = await fetchTask(id);
+    if (!data) return;
 
-      setProjectTags(
-        allProjectTags.map((t) => ({ value: t.id, label: t.name })),
-      );
-      setTags(
-        taskTags.length > 0 ? mapTagsFromIds(taskTags, allProjectTags) : [],
-      );
+    setTask(data);
+    
+    const promises: Promise<void>[] = [loadAssignee(data.assignee)];
+    
+    if (data.project) {
+      const projectId = data.project;
+      const taskTags = data.tags || [];
+      
+      const fetchProjectInfo = async () => {
+        const [allProjectTags, projectRes] = await Promise.all([
+          fetchProjectTags(projectId),
+          projectApi.getProject(projectId),
+        ]);
 
-      if (projectRes.ok && projectRes.data) {
-        const memberIds = projectRes.data.members || [];
-        if (memberIds.length > 0) {
-          const usersResponses = await Promise.all(
-            memberIds.map((id: string) => userApi.getUser(id)),
-          );
-          setProjectMembers(
-            usersResponses
-              .filter((res) => res.ok && res.data)
-              .map((res) => (res.data.user || res.data) as User),
-          );
-        } else {
-          setProjectMembers([]);
+        setProjectTags(
+          allProjectTags.map((t) => ({ value: t.id, label: t.name })),
+        );
+        setTags(
+          taskTags.length > 0 ? mapTagsFromIds(taskTags, allProjectTags) : [],
+        );
+
+        if (projectRes.ok && projectRes.data) {
+          await fetchProjectMembersDetails(projectRes.data, setProjectMembers);
         }
-      }
-    },
-    [],
-  );
+      };
+      
+      promises.push(fetchProjectInfo());
+    }
+
+    await Promise.all(promises);
+  }, [id, loadAssignee]);
 
   useFocusEffect(
     useCallback(() => {
-      const loadTaskAndTags = async () => {
-        const data = await fetchTask(id);
-        if (!data) return;
-
-        setTask(data);
-        await Promise.all([
-          loadAssignee(data.assignee),
-          data.project
-            ? loadProjectDetails(data.project, data.tags || [])
-            : Promise.resolve(),
-        ]);
-      };
-
       if (id) {
-        loadTaskAndTags();
+        loadData().catch(err => console.error("Error loading task details:", err));
       }
-    }, [id, loadAssignee, loadProjectDetails]),
+    }, [id, loadData]),
   );
 
   const updateTask = async (updates: Partial<Task> = {}) => {
@@ -166,7 +160,7 @@ export function useTaskDetails(id: string) {
     }
 
     if (tagId) {
-      addTag(tagId, name);
+      await addTag(tagId, name);
     }
   };
 

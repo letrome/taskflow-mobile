@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { deleteToken, getToken } from "./auth-storage";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const getApiUrl = () => process.env.EXPO_PUBLIC_API_URL || '';
 
 type ApiRequestOptions = RequestInit & {
   params?: Record<string, string | string[] | undefined>;
@@ -48,7 +48,7 @@ export const apiClient = {
     endpoint: string,
     params?: Record<string, string | string[] | undefined>,
   ): string {
-    const url = `${API_URL}${endpoint}`;
+    const url = `${getApiUrl()}${endpoint}`;
     if (!params) return url;
 
     const queryParams = new URLSearchParams();

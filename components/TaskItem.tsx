@@ -17,6 +17,7 @@ export default function TaskItem({ item, onViewTask }: TaskItemProps) {
   return (
     <Pressable
       onPress={() => onViewTask?.(item.id)}
+      accessibilityRole="button"
       className="bg-card mb-3 p-4 rounded-xl border border-border/50 flex-row items-center shadow-sm"
     >
       <View

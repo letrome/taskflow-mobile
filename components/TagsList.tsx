@@ -47,6 +47,8 @@ export default function TagsList({
                   onPress={() => {
                     onDeleteTag(item.id);
                   }}
+                  accessibilityRole="button"
+                  testID={`delete-tag-${item.id}`}
                   className="ml-2 bg-primary/20 rounded-full p-0.5"
                   hitSlop={8}
                 >
@@ -75,6 +77,8 @@ export default function TagsList({
               ) : (
                 <Pressable
                   onPress={() => setIsAdding(true)}
+                  accessibilityRole="button"
+                  testID="add-tag-button"
                   className="flex-row items-center border border-dashed border-primary/30 px-3 py-1.5 rounded-full"
                 >
                   <Plus size={14} className="text-primary mr-1" />

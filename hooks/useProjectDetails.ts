@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { getCurrentUserId } from "@/services/auth-storage";
 import { projectApi } from "@/services/project-api";
-import { userApi } from "@/services/user-api";
+import { fetchProjectCreatorDetails, fetchProjectMembersDetails } from "@/services/user-utils";
 import type { Project } from "@/types/project";
 import type { Task } from "@/types/task";
 import type { User } from "@/types/user";
@@ -42,49 +42,6 @@ const fetchTags = async (id: string) => {
   return [];
 };
 
-async function fetchProjectCreatorDetails(
-  data: Project,
-  setProjectOwner: React.Dispatch<React.SetStateAction<User | null>>,
-) {
-  if (data.created_by) {
-    try {
-      const res = await userApi.getUser(data.created_by);
-      if (res.ok && res.data) {
-        setProjectOwner((res.data.user || res.data) as User);
-      }
-    } catch (error) {
-      console.error("Failed to fetch project owner:", error);
-    }
-  }
-}
-
-async function fetchProjectMembersDetails(
-  data: Project,
-  setProjectMembers: React.Dispatch<React.SetStateAction<User[]>>,
-) {
-  if (data.members && data.members.length > 0) {
-    try {
-      const usersPromises = data.members.map((memberId: string) =>
-        userApi.getUser(memberId),
-      );
-      const usersResponses = await Promise.all(usersPromises);
-
-      const fetchedUsers = usersResponses
-        .filter((res) => res.ok && res.data)
-        .map((res) => {
-          return (res.data.user || res.data) as User;
-        });
-
-      setProjectMembers(fetchedUsers);
-    } catch (error) {
-      console.error("Failed to fetch project members details:", error);
-      setProjectMembers([]);
-    }
-  } else {
-    setProjectMembers([]);
-  }
-}
-
 export function useProjectDetails(id: string) {
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[] | null>(null);
@@ -102,45 +59,40 @@ export function useProjectDetails(id: string) {
 
   const isOwner = project?.created_by === currentUserId;
 
-  const loadProject = useCallback(async () => {
-    const data = await fetchProject(id);
-    if (data) {
-      setProject(data);
-      fetchProjectCreatorDetails(data, setProjectOwner);
-      fetchProjectMembersDetails(data, setProjectMembers);
+  const loadData = useCallback(async () => {
+    const [projectData, tasksData, tagsData, userId] = await Promise.all([
+      fetchProject(id),
+      fetchTasks(id, taskParams),
+      fetchTags(id),
+      getCurrentUserId()
+    ]);
+
+    if (projectData) {
+      setProject(projectData);
+      // Wait for creator and members details sequentially or in parallel
+      await Promise.all([
+        fetchProjectCreatorDetails(projectData, setProjectOwner),
+        fetchProjectMembersDetails(projectData, setProjectMembers)
+      ]);
     }
-  }, [id]);
-
-  const loadTasks = useCallback(async () => {
-    const data = await fetchTasks(id, taskParams);
-    if (data) setTasks(data);
+    
+    if (tasksData) setTasks(tasksData);
+    if (tagsData) setTags(tagsData);
+    setCurrentUserId(userId);
   }, [id, taskParams]);
-
-  const loadTags = useCallback(async () => {
-    const data = await fetchTags(id);
-    if (data) setTags(data);
-  }, [id]);
 
   const refresh = useCallback(async () => {
     setIsRefreshing(true);
-    await Promise.all([loadProject(), loadTasks(), loadTags()]);
+    await loadData();
     setIsRefreshing(false);
-  }, [loadProject, loadTasks, loadTags]);
+  }, [loadData]);
 
   useFocusEffect(
     useCallback(() => {
-      const loadCurrentUser = async () => {
-        const userId = await getCurrentUserId();
-        setCurrentUserId(userId);
-      };
-
       if (id) {
-        loadProject();
-        loadTasks();
-        loadTags();
-        loadCurrentUser();
+        loadData().catch(err => console.error("Error loading project data:", err));
       }
-    }, [id, loadProject, loadTasks, loadTags]),
+    }, [id, loadData]),
   );
 
   const updateProject = async (updates: Partial<Project> = {}) => {

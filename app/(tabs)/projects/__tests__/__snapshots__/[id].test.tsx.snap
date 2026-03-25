@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProjectDetailsScreen renders loading state when project is null 1`] = `
+<View
+  className="flex-1 items-center justify-center bg-background"
+>
+  <ActivityIndicator
+    className="text-primary"
+    size="large"
+  />
+</View>
+`;

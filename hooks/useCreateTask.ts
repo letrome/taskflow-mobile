@@ -1,7 +1,7 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { projectApi } from "@/services/project-api";
-import { userApi } from "@/services/user-api";
+import { fetchProjectMembersDetails } from "@/services/user-utils";
 import type { User } from "@/types/user";
 
 export function useCreateTask(projectId: string) {
@@ -21,68 +21,50 @@ export function useCreateTask(projectId: string) {
   >([]);
   const [isLoadingProjectData, setIsLoadingProjectData] = useState(false);
 
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      if (!projectId) return;
-      setIsLoadingProjectData(true);
-      try {
-        const [tagsRes, projectRes] = await Promise.all([
-          projectApi.getProjectTags(projectId),
-          projectApi.getProject(projectId),
-        ]);
+  const loadProjectData = useCallback(async () => {
+    if (!projectId) return;
+    setIsLoadingProjectData(true);
+    try {
+      const [tagsRes, projectRes] = await Promise.all([
+        projectApi.getProjectTags(projectId),
+        projectApi.getProject(projectId),
+      ]);
 
-        if (tagsRes.ok && tagsRes.data) {
-          setTagOptions(
-            tagsRes.data
-              .filter((tag: { id?: string; name?: string } | string) => {
-                if (typeof tag === "string") return tag.trim() !== "";
-                return (
-                  (tag.id && tag.id.trim() !== "") ||
-                  (tag.name && tag.name.trim() !== "")
-                );
-              })
-              .map((tag: { id?: string; name?: string } | string) => {
-                if (typeof tag === "string") {
-                  return { value: tag, label: tag };
-                }
-                return {
-                  value: tag.id || tag.name || "",
-                  label: tag.name || tag.id || "",
-                };
-              }),
-          );
-        }
-
-        if (projectRes.ok && projectRes.data) {
-          const memberIds = projectRes.data.members || [];
-          if (memberIds.length > 0) {
-            const userPromises = memberIds.map((id: string) =>
-              userApi.getUser(id),
-            );
-            const userResponses = await Promise.all(userPromises);
-            const fullMembers = userResponses
-              .filter(
-                (res): res is { ok: true; data: Record<string, unknown> } =>
-                  !!(res.ok && res.data),
-              )
-              .map((res) => {
-                const data = res.data as { user?: User } & User;
-                return data.user || data;
-              });
-            setProjectMembers(fullMembers);
-          } else {
-            setProjectMembers([]);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch project data", err);
-      } finally {
-        setIsLoadingProjectData(false);
+      if (tagsRes.ok && tagsRes.data) {
+        setTagOptions(
+          tagsRes.data
+            .filter((tag: { id?: string; name?: string } | string) => {
+              if (typeof tag === "string") return tag.trim() !== "";
+              return (
+                (tag.id && tag.id.trim() !== "") ||
+                (tag.name && tag.name.trim() !== "")
+              );
+            })
+            .map((tag: { id?: string; name?: string } | string) => {
+              if (typeof tag === "string") {
+                return { value: tag, label: tag };
+              }
+              return {
+                value: tag.id || tag.name || "",
+                label: tag.name || tag.id || "",
+              };
+            }),
+        );
       }
-    };
 
-    fetchProjectData();
+      if (projectRes.ok && projectRes.data) {
+        await fetchProjectMembersDetails(projectRes.data, setProjectMembers);
+      }
+    } catch (err) {
+      console.error("Failed to fetch project data", err);
+    } finally {
+      setIsLoadingProjectData(false);
+    }
   }, [projectId]);
+
+  useEffect(() => {
+    loadProjectData().catch(err => console.error("Error in useCreateTask effect:", err));
+  }, [loadProjectData]);
 
   const toggleTag = (value: string) => {
     setTags((current) =>

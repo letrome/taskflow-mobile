@@ -65,3 +65,7 @@ bruno/
 # SonarQube
 sonar-project.properties
 .scannerwork
+
+# Jest
+coverage/
+test-reports/

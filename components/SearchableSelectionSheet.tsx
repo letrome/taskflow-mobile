@@ -128,7 +128,11 @@ const SearchableSelectionSheet = forwardRef<
                 autoCapitalize="none"
               />
               {searchQuery.length > 0 && (
-                <Pressable onPress={() => setSearchQuery("")} className="p-1">
+                <Pressable
+                  onPress={() => setSearchQuery("")}
+                  testID="clear-search-button"
+                  className="p-1"
+                >
                   <X size={16} className="text-muted-foreground" />
                 </Pressable>
               )}

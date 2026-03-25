@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Index (Root Redirect) renders loading state initially 1`] = `
+<View
+  className="flex-1 justify-center items-center bg-background"
+>
+  <ActivityIndicator
+    color="#3b82f6"
+    size="large"
+  />
+</View>
+`;

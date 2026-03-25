@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TabOneScreen (Projects List) renders loading state 1`] = `
+<View
+  className="flex-1 bg-background justify-center items-center"
+>
+  <ActivityIndicator
+    color="#3b82f6"
+    size="large"
+  />
+</View>
+`;
