@@ -44,10 +44,13 @@ export default function ProjectHeader({
         className="text-3xl font-extrabold text-foreground tracking-tight flex-1"
         onChangeText={(title) => setProject({ ...project, title })}
         onBlur={() => updateProject({ title: project.title })}
+        accessibilityLabel="Project title"
       />
       {project.status && (
         <TouchableOpacity
           onPress={handlePresentModalPress}
+          accessibilityRole="button"
+          accessibilityLabel={`Project status: ${isActive ? "Active" : "Archived"}. Tap to change.`}
           className="bg-primary/10 px-3 py-1 rounded-full ml-4"
         >
           <View

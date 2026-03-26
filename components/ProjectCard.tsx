@@ -29,6 +29,8 @@ export default function ProjectCard({ item, onPress }: ProjectCardProps) {
     <Pressable
       onPress={() => onPress(item.id)}
       accessibilityRole="button"
+      accessibilityLabel={`Project: ${item.title}. Status: ${isActive ? "Active" : "Archived"}. ${Array.isArray(item.members) ? item.members.length : 0} member(s).`}
+      accessibilityHint="Tap to view project details"
       className="bg-card w-full p-5 mb-4 rounded-2xl shadow-sm border border-border"
     >
       <View className="flex-row justify-between items-start mb-3">

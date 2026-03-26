@@ -36,6 +36,9 @@ export default function FormSelection({
         }`}
         onPress={onPress}
         disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={`${label}: ${value || placeholder}`}
+        accessibilityState={{ disabled: !!disabled }}
       >
         <Text
           className={`text-base ${

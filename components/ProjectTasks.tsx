@@ -57,6 +57,8 @@ export default function ProjectTasks({
               <Text className="text-xl font-bold text-foreground">Tasks</Text>
               <TouchableOpacity
                 onPress={handlePresentModalPress}
+                accessibilityRole="button"
+                accessibilityLabel={hasActiveFilters ? "Filters & Sort (active). Tap to change filters." : "Filters & Sort. Tap to open filters."}
                 className={`flex-row items-center px-3 py-1.5 rounded-full border ${hasActiveFilters ? "border-primary bg-primary/10" : "border-border"}`}
               >
                 <Filter

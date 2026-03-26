@@ -74,10 +74,12 @@ export default function ProjectMembersList({
         <Pressable
           key={user.id}
           onPress={() => handleSelectUser(user)}
+          accessibilityRole="button"
+          accessibilityLabel={`Select ${user.first_name} ${user.last_name}`}
           className="p-3 border-b border-border/50 flex-row items-center"
         >
           <View className="h-8 w-8 rounded-full bg-primary/20 items-center justify-center mr-3">
-            <Text className="text-primary font-bold text-xs">
+            <Text className="text-primary font-bold text-xs" accessibilityElementsHidden={true}>
               {user.first_name[0]}
               {user.last_name[0]}
             </Text>
@@ -118,6 +120,7 @@ export default function ProjectMembersList({
                 <Pressable
                   onPress={() => onDeleteProjectMember(item.id)}
                   accessibilityRole="button"
+                  accessibilityLabel={`Remove ${item.first_name} ${item.last_name} from project`}
                   testID={`delete-member-${item.id}`}
                   className="ml-2 bg-primary/20 rounded-full p-0.5"
                   hitSlop={8}
@@ -146,6 +149,8 @@ export default function ProjectMembersList({
                         setSearchQuery("");
                         setSearchResults([]);
                       }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Cancel adding member"
                       testID="cancel-add-member"
                       className="p-2"
                     >

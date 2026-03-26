@@ -28,9 +28,12 @@ export default function TaskDelete({ onDelete, isDeleting = false }: TaskDeleteP
       <TouchableOpacity
         onPress={handleDeletePress}
         disabled={isDeleting}
+        accessibilityRole="button"
+        accessibilityLabel={isDeleting ? "Deleting task…" : "Delete Task"}
+        accessibilityState={{ disabled: isDeleting }}
         className={`flex-row items-center justify-center p-4 rounded-xl border ${
-          isDeleting 
-            ? "bg-muted border-border" 
+          isDeleting
+            ? "bg-muted border-border"
             : "bg-red-500/10 border-red-500/20"
         }`}
       >

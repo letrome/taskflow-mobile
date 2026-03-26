@@ -50,6 +50,7 @@ export default function TaskFilterSheet({
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: "#1c1c1e" }} // adjust for your theme
       handleIndicatorStyle={{ backgroundColor: "#666" }}
+      accessibilityViewIsModal
     >
       <BottomSheetScrollView contentContainerStyle={{ padding: 20 }}>
         <Text className="text-2xl font-bold text-white mb-6">
@@ -157,6 +158,8 @@ export default function TaskFilterSheet({
         <TouchableOpacity
           className="bg-primary p-4 rounded-xl items-center mt-4 mb-8"
           onPress={() => setTaskParams({})}
+          accessibilityRole="button"
+          accessibilityLabel="Reset all filters"
         >
           <Text className="text-primary-foreground font-bold text-base">
             Reset filters

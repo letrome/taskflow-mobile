@@ -41,6 +41,8 @@ export default function ProjectDates({
     <View className="flex-row items-center justify-between border-t border-border/50 pt-4 mt-2">
       <TouchableOpacity
         onPress={() => setDatePickerConfig({ show: true, type: "start" })}
+        accessibilityRole="button"
+        accessibilityLabel={`Start date: ${project.start_date ? new Date(project.start_date).toLocaleDateString() : "not set"}. Tap to change.`}
       >
         <Text className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">
           Start Date
@@ -54,6 +56,8 @@ export default function ProjectDates({
       <TouchableOpacity
         className="items-end"
         onPress={() => setDatePickerConfig({ show: true, type: "end" })}
+        accessibilityRole="button"
+        accessibilityLabel={`End date: ${project.end_date ? new Date(project.end_date).toLocaleDateString() : "not set"}. Tap to change.`}
       >
         <Text className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">
           End Date

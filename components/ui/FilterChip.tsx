@@ -14,6 +14,9 @@ export default function FilterChip({
   return (
     <TouchableOpacity
       onPress={onPress}
+      accessibilityRole="checkbox"
+      accessibilityLabel={label}
+      accessibilityState={{ checked: isActive }}
       className={`px-4 py-2 rounded-full mr-2 mb-2 border ${
         isActive ? "bg-primary border-primary" : "bg-white/5 border-white/10"
       }`}

@@ -22,6 +22,9 @@ export default function CreateElementButton({
       }`}
       onPress={onPress}
       disabled={isSubmitting}
+      accessibilityRole="button"
+      accessibilityLabel={isSubmitting ? "Loading…" : label}
+      accessibilityState={{ disabled: isDisabled }}
     >
       {isSubmitting ? (
         <ActivityIndicator color="white" />

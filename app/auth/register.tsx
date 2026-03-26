@@ -46,6 +46,8 @@ export default function RegisterScreen() {
           </Text>
           <Pressable
             onPress={routeToLogin}
+            accessibilityRole="button"
+            accessibilityLabel="Go to Login"
             className="bg-primary p-4 rounded-2xl items-center shadow-sm w-full"
           >
             <Text className="text-primary-foreground font-bold text-lg">
@@ -66,32 +68,44 @@ export default function RegisterScreen() {
         <TextInput
           placeholder="First Name"
           onChangeText={(val) => setFormData({ ...formData, first_name: val })}
+          accessibilityLabel="First Name"
           className="border border-border rounded-xl mb-4 p-4 text-foreground bg-background text-base"
         />
         <TextInput
           placeholder="Last Name"
           onChangeText={(val) => setFormData({ ...formData, last_name: val })}
+          accessibilityLabel="Last Name"
           className="border border-border rounded-xl mb-4 p-4 text-foreground bg-background text-base"
         />
         <TextInput
           placeholder="Email"
           keyboardType="email-address"
           onChangeText={(val) => setFormData({ ...formData, email: val })}
+          accessibilityLabel="Email"
+          accessibilityHint="Enter your email address"
           className="border border-border rounded-xl mb-4 p-4 text-foreground bg-background text-base"
         />
         <TextInput
           placeholder="Password"
           secureTextEntry
           onChangeText={(val) => setFormData({ ...formData, password: val })}
+          accessibilityLabel="Password"
           className="border border-border rounded-xl mb-6 p-4 text-foreground bg-background text-base"
         />
 
         {error && (
-          <Text className="text-red-500 text-center mb-4">{error}</Text>
+          <Text
+            className="text-red-500 text-center mb-4"
+            accessibilityLiveRegion="polite"
+          >
+            {error}
+          </Text>
         )}
 
         <Pressable
           onPress={handleRegister}
+          accessibilityRole="button"
+          accessibilityLabel="Register"
           className="bg-primary p-4 rounded-2xl items-center shadow-sm"
         >
           <Text className="text-primary-foreground font-bold text-lg">
@@ -101,6 +115,8 @@ export default function RegisterScreen() {
 
         <Pressable
           onPress={() => router.replace("/auth/login")}
+          accessibilityRole="link"
+          accessibilityLabel="Already have an account? Login"
           className="items-center mt-6 p-2"
         >
           <Text className="text-foreground text-base">

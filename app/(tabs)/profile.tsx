@@ -41,7 +41,7 @@ export default function ProfileScreen() {
         <View className="flex-row gap-4 mb-8">
           <View className="flex-1 bg-card p-4 rounded-2xl border border-border shadow-sm">
             <View className="bg-primary/10 w-10 h-10 rounded-full items-center justify-center mb-3">
-              <Briefcase size={20} color="#3b82f6" />
+              <Briefcase size={20} color="#3b82f6" accessible={false} importantForAccessibility="no" />
             </View>
             <Text className="text-2xl font-bold text-foreground">
               {totalProjects}
@@ -53,7 +53,7 @@ export default function ProfileScreen() {
 
           <View className="flex-1 bg-card p-4 rounded-2xl border border-border shadow-sm">
             <View className="bg-green-500/10 w-10 h-10 rounded-full items-center justify-center mb-3">
-              <Activity size={20} color="#22c55e" />
+              <Activity size={20} color="#22c55e" accessible={false} importantForAccessibility="no" />
             </View>
             <Text className="text-2xl font-bold text-foreground">
               {activeProjects}
@@ -68,6 +68,8 @@ export default function ProfileScreen() {
           <Pressable
             className="bg-card p-4 rounded-2xl border border-red-200 dark:border-red-900/30 flex-row items-center justify-center"
             onPress={logout}
+            accessibilityRole="button"
+            accessibilityLabel="Logout"
           >
             <LogOut size={20} color="#ef4444" />
             <Text className="text-red-500 font-bold text-lg ml-2">Logout</Text>

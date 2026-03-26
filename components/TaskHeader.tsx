@@ -41,10 +41,13 @@ export default function TaskHeader({
         className="text-3xl font-extrabold text-foreground tracking-tight flex-1"
         onChangeText={(title) => setTask({ ...task, title })}
         onBlur={() => updateTask({ title: task.title })}
+        accessibilityLabel="Task title"
       />
       {task.state && (
         <TouchableOpacity
           onPress={handlePresentModalPress}
+          accessibilityRole="button"
+          accessibilityLabel={`Task state: ${stateOption?.label ?? task.state}. Tap to change.`}
           className="bg-primary/10 px-3 py-1 rounded-full ml-4"
         >
           <View

@@ -36,6 +36,7 @@ export default function FormInput({
         textAlignVertical={multiline ? "top" : "center"}
         value={value}
         onChangeText={onChangeText}
+        accessibilityLabel={label}
       />
     </FormField>
   );

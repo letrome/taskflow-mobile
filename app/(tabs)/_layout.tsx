@@ -39,6 +39,7 @@ export default function TabLayout() {
         options={{
           title: "Projects",
           tabBarIcon: ProjectIcon,
+          tabBarAccessibilityLabel: "Projects tab",
         }}
       />
       <Tabs.Screen
@@ -46,6 +47,7 @@ export default function TabLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ProfileIcon,
+          tabBarAccessibilityLabel: "Profile tab",
         }}
       />
     </Tabs>

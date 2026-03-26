@@ -43,6 +43,7 @@ const SelectionSheet = forwardRef<BottomSheetModal, SelectionSheetProps>(
         ref={ref}
         snapPoints={snapPoints}
         backdropComponent={renderBackdrop}
+        accessibilityViewIsModal
       >
         <BottomSheetView className="flex-1 p-6 items-center">
           <Text className="text-xl font-bold mb-6 text-foreground">
@@ -53,6 +54,9 @@ const SelectionSheet = forwardRef<BottomSheetModal, SelectionSheetProps>(
               <TouchableOpacity
                 key={option.value}
                 onPress={() => handleSelect(option.value)}
+                accessibilityRole="radio"
+                accessibilityLabel={option.label}
+                accessibilityState={{ checked: selectedValue === option.value }}
                 className={`px-5 py-3 rounded-full flex-1 items-center ${
                   selectedValue === option.value
                     ? "bg-primary"
